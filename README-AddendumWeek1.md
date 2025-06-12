@@ -260,7 +260,7 @@ IN → LLM1 → Gate (code, optional) → LLM2 → LLM3 → OUT
 *Direct an input into a specialized sub-task, ensuring separation of concerns*
 
 ```
-IN → LLM Router → (LLM1 / LLM2 / LLM3) → OUT
+IN → LLM Router (with condition ONLY one LLM) → (LLM1 / LLM2 / LLM3) → OUT
 ```
 
 ---
@@ -303,7 +303,7 @@ IN → Coordinator (code) → (LLM1 / LLM2 / LLM3 in parallel) → Aggregator (c
 ---
 
 **4. ORCHESTRATOR-WORKER**
-*Complex tasks are broken down dynamically and combined*
+*Complex tasks are broken down dynamically and combined - refer to **Price is Right** in LLM Engineering Course*
 
 ```
 IN → Orchestrator (LLM) → (LLM1 / LLM2 / LLM3) → Synthesizer (LLM) → OUT
@@ -504,3 +504,98 @@ HUMAN → LLM Call → ENVIRONMENT <-> (Feedback)
 | 任務流程   | 避免無限迴圈、成本爆表、不收斂任務 |
 
 ---
+
+## Week 1 Day 3
+
+---
+### **Calling multiple LLMs**
+
+- We will be calling **Paid APIs** and **open-source** models in the **cloud** and **locally** throughout this course.
+
+- You have complete flexibility to pick which you use,
+and can **spend \$0**.
+
+- More on **selecting, applying** and **deploying** LLMs with my **LLM Engineering** course.
+
+---
+### **The cast of characters**
+
+- **OpenAI:** gpt-4o-mini (also gpt-4o, o1, o3-mini)
+- **Anthropic:** Claude-3-7-Sonnet
+- **Google:** Gemini-2.0-flash
+- **DeepSeek AI:** DeepSeek V3, DeepSeek R1
+- **Groq:** open-source LLMs including Llama3.3
+- **Ollama:** local open-source LLMs including Llama3.2
+
+**The Vellum leaderboard** gives a comparison of costs and performance ([https://www.vellum.ai/llm-leaderboard](https://www.vellum.ai/llm-leaderboard))
+
+---
+
+A breakdown of the **differences between the "cast of characters"** listed in your image — major LLM providers — focusing on their **origin, specialization, performance, openness, and hosting options**:
+
+---
+
+## 🧾 **Overview Table:**
+
+| Provider        | Model(s)             | Type                | Hosting                    | Notable Features                                         |
+| --------------- | -------------------- | ------------------- | -------------------------- | -------------------------------------------------------- |
+| **OpenAI**      | gpt-4o, gpt-4o-mini  | Proprietary         | Cloud (OpenAI, Azure)      | Multimodal, strong reasoning, long-context dialogue      |
+| **Anthropic**   | Claude-3-7-Sonnet    | Proprietary         | Cloud (Claude.ai, Bedrock) | Long context, safe alignment, balanced tone              |
+| **Google**      | Gemini-2.0-flash     | Proprietary         | Cloud (Vertex AI)          | Fast responses, integrates with Google ecosystem         |
+| **DeepSeek AI** | DeepSeek V3, R1      | Commercial/Research | Self-host or Cloud         | Strong multilingual reasoning, trained on web-scale data |
+| **Groq**        | Llama3.3 on Groq LPU | Open-source runtime | Cloud (GroqCloud)          | Ultra-fast inference on custom LPU hardware              |
+| **Ollama**      | Llama3.2             | Open-source         | Local (Desktop/Edge)       | Easy local setup, lightweight, offline-capable           |
+
+---
+
+## 🔍 **Detailed Differences by Category**
+
+### 🧠 **1. Intelligence & Reasoning Power**
+
+* **Strongest models**: OpenAI GPT-4o, Anthropic Claude 3, DeepSeek V3
+* **Fastest models**: Google Gemini Flash, Groq (LPU-powered)
+
+### 🧩 **2. Openness**
+
+* **Open-source**: DeepSeek, Groq (runs open models), Ollama
+* **Closed-source**: OpenAI, Anthropic, Google
+
+### 🖥️ **3. Hosting/Deployment**
+
+* **Cloud-only**: OpenAI, Claude, Gemini
+* **Local/Edge-ready**: Ollama, DeepSeek
+* **Hybrid (cloud API + self-host)**: Groq, DeepSeek
+
+### 💰 **4. Cost**
+
+* **Free options**: Ollama (run models locally, no API cost)
+* **Paid APIs**: OpenAI, Anthropic, Google
+* **Groq**: Very low-cost due to their own LPU hardware
+
+---
+
+## ✅ **When to Use What**
+
+| Need                              | Recommendation          |
+| --------------------------------- | ----------------------- |
+| Best reasoning/completion         | GPT-4o, Claude 3        |
+| Cost-effective local use          | Ollama with Llama 3.2   |
+| Fastest inference for production  | Groq + Llama3.3         |
+| Open research / customization     | DeepSeek V3 or Mistral  |
+| Cloud-native business integration | Google Gemini or OpenAI |
+
+---
+
+🤔 Use LPU or GPU?
+| Scenario                            | Best Fit                 |
+| ----------------------------------- | ------------------------ |
+| Training your own model             | **GPU**                  |
+| Hosting general AI workloads        | **GPU**                  |
+| Serving ultra-fast chatbot response | **LPU** (e.g. GroqCloud) |
+| Local prototyping                   | **GPU/CPU** (or Ollama)  |
+
+**客服** Chatbot（Customer Service AI）這類**高併發、低延遲**的應用場景來說，使用 **LPU**（Language Processing Unit），通常比 GPU 更合適
+
+---
+
+1_foundations/2_lab2.ipynb

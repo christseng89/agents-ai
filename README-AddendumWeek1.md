@@ -7,6 +7,20 @@ Flexible AI workflow automation https://n8n.io/
 
 - **n8n.io** is a **low-code/no-code** workflow automation platform that allows users to create workflows by orchestrating between different applications without needing extensive coding knowledge.
 
+- https://github.com/n8n-io/n8n
+- Install n8n locally
+    ```cmd
+    npx n8n
+    ```
+- http://localhost:5678/home/workflows
+- Set up your **.env** file with your **N8N_API_KEY** 
+
+    ```note
+    .env
+    N8N_API_KEY=eyJh...
+
+    ```
+
 ### Week 1 to Week 6 learning roadmap:
 
 * **🟤 Dark Coffee = Theory/Concepts**
@@ -969,3 +983,146 @@ Prompt LLM again (with resources + tool result)
     - Do you hold a patent?
     - Do you have a flight license?
     - Do you have a driver's license?
+
+## Week 1 Day 5
+### Agentic Frameworks - No Frameworks using Tools
+
+1_foundations/test_tools.py
+1_foundations/4_lab4.ipynb
+1_foundations/app.py
+
+```cmd
+cd 1_foundations
+uv run test_tools.py
+uv run app.py
+
+```
+
+#### Tools for LLMs
+這兩個函數 `record_user_details` 和 `record_unknown_question`，搭配對應的 JSON schema，目的在於讓 LLM 能夠透過工具呼叫，**主動紀錄使用者的重要互動資訊**，即使這些不是自然語言對話中直接回答的部分。
+
+---
+
+## 🔍 功能說明：
+
+### 1. `record_user_details`
+
+#### ✅ 目的：
+
+當 LLM 判斷與使用者互動深入、有潛在合作機會時，會引導使用者留下聯絡方式（如 email），並透過這個工具 **紀錄聯絡資訊**。
+
+#### 📦 JSON Schema 範例：
+
+```json
+{
+  "name": "record_user_details",
+  "description": "紀錄使用者聯絡方式，如 email",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "email": {
+        "type": "string",
+        "description": "使用者的電子郵件地址"
+      }
+    },
+    "required": ["email"]
+  }
+}
+```
+---
+
+### 2. `record_unknown_question`
+
+#### ✅ 目的：
+
+當 LLM **無法回答使用者提問時（即使問題很瑣碎或非專業）**，可主動將這個問題記錄下來，方便後續改進模型或讓真人補答。
+
+#### 📦 JSON Schema 範例：
+
+```json
+{
+  "name": "record_unknown_question",
+  "description": "紀錄無法回答的問題",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "question": {
+        "type": "string",
+        "description": "使用者的問題"
+      }
+    },
+    "required": ["question"]
+  }
+}
+```
+---
+
+## 🧠 總結（使用場景比較）：
+
+| 函數名稱                      | 用途                | LLM 自主使用情境                  |
+| ------------------------- | ----------------- | --------------------------- |
+| `record_user_details`     | 儲存使用者 email 等聯絡方式 | 使用者顯示合作興趣或深入互動              |
+| `record_unknown_question` | 紀錄無法回答的問題         | 使用者問了 LLM 無資料可回答的問題（包含冷門話題） |
+
+---
+
+### ✅ 使用 OpenAI Function Calling / Tool Calling 的正確方式：
+
+```python
+tools = [{"type": "function", "function": record_user_details_json},
+        {"type": "function", "function": record_unknown_question_json}]
+
+...
+response = openai.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=messages,
+    tools=tools
+)
+```
+### 🔍 說明：
+
+* `model="gpt-4o-mini"`：指定要使用的模型。
+* `messages=messages`：歷史對話內容（包含 system/user/assistant role 的訊息）。
+* `tools=tools`：告訴模型有哪些工具（函數）它可以使用，讓模型在需要的時候自動回傳工具呼叫（tool call）的 JSON 格式。
+
+---
+
+### 🔧 如果你希望 LLM 在必要時主動使用工具，你還可以加入 `tool_choice="auto"`（可選）：
+
+```python
+response = openai.chat.completions.create(
+    model="gpt-4o-mini",
+    messages=messages,
+    tools=tools,
+    tool_choice="auto"  # 可選，預設就是 auto
+)
+```
+
+這樣會讓 LLM 自由決定是否使用其中一個 tool。
+
+---
+
+#### Deploy app.py to Hugging Face Spaces
+```cmd
+cd 1_foundations
+uv run gradio deploy
+
+```
+### 📦uv run gradio deploy Work Through
+Creating new Spaces Repo in 'D:\development\agents-ai\1_foundations'. Collecting metadata, press Enter to accept default value.
+Enter Spaces app title [1_foundations]: **Career_Conversions**
+Enter Gradio app file [app.py]: 
+Enter Spaces hardware (cpu-basic, cpu-upgrade, cpu-xl, zero-a10g, t4-small, t4-medium, l4x1, l4x4, l40sx1, l40sx4, l40sx8, a10g-small, a10g-large, a10g-largex2, a10g-largex4, a100-large, h100, h100x8) [cpu-basic]:
+Any Spaces secrets (y/n) [n]: **y**
+Enter secret name (leave blank to end): **OPENAI_API_KEY**
+Enter secret value for OPENAI_API_KEY: **sk-proj-ypFvL65EvbsmO7CbVMD5R...**
+Enter secret name (leave blank to end): **PUSHOVER_USER**
+Enter secret value for PUSHOVER_USER: **uvuq9thwa...**
+Enter secret name (leave blank to end): **PUSHOVER_TOKEN**
+Enter secret value for PUSHOVER_TOKEN: **aeuhfdmy82...**
+Enter secret name (leave blank to end): 
+Create Github Action to automatically update Space on 'git push'? [n]: 
+Space available at https://huggingface.co/spaces/christseng898/Career_Conversions
+
+### Special Notes:
+- **README.md** will be created in the folder 1_foundations after deploy.

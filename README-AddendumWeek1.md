@@ -599,3 +599,373 @@ A breakdown of the **differences between the "cast of characters"** listed in yo
 ---
 
 1_foundations/2_lab2.ipynb
+
+## Week 1 Day 4
+
+### Here’s the image text represented with color-coded labels and layout (bottom-up):
+
+---
+
+**🟦 Bottom Row (Blue):**
+
+* **No framework**
+* **MCP**
+
+**🟩 Middle Row (Light Green):**
+
+* **OpenAI Agents SDK**
+* **Crew AI**
+
+**🟫 Top Row (Brown):**
+
+* **LangGraph**
+* **AutoGen**
+
+### 🖍️ Color Legend
+
+* **🟦 Blue**: Lower-level or standard options
+* **🟩 Light Green**: Emerging agentic AI SDKs (notable middle ground)
+* **🟫 Brown**: Advanced, graph‑ or generation‑oriented agentic frameworks
+
+---
+
+### What is MCP?
+**MCP** 是 **Model Context Protocol** 的縮寫，一種由 **Anthropic** 在 **2024 年 11 月**提出的**開放標準**，目的是成為讓大型語言模型（LLM）與外部工具、資料源安全交互的「**統一通訊規範**」。
+
+---
+
+## 📘 MCP 主要功能與特色
+
+### 🧩 1. 統一介面（“USB‑C for AI”）
+
+* 將 LLM 與檔案系統、資料庫、API、第三方工具（如 GitHub、Slack、PostgreSQL 等）透過標準化協定連接，免去為每個來源分別寫整合程式。
+* 類似**萬用接頭**，連接不同設備與資料源。
+
+### 🔄 2. 雙向安全互動
+
+* 使用 **JSON‑RPC 2.0** 通訊協定，定義清楚的請求與回應格式，支援雙向互動，也能攜帶 metadata（如模型版本、權限資訊）。
+* 支援 **tool permission negotiation**，確保代理程式只能執行被授權的操作。
+
+### ⚙️ 3. 開源與跨平台生態
+
+* **Anthropic** 提供 **MCP 伺服器**與**客戶端 SDK**（Python、TypeScript、Java、C# 等）。
+* **OpenAI**、**Google DeepMind**、**Microsoft** 等均已採用 MCP，協同打造類似 **HTTP 的 AI Agent 協定**。
+
+---
+
+## 🗣️ MCP 的使用場景
+
+* **桌面助手**：如 Claude Desktop 使用本地 MCP server 讀取文件、操作系統指令。
+* **企業應用**：如 Block、Replit、Sourcegraph 使用 MCP 連接內部資料庫和業務工具。
+* **工具串接多 Agent 流程**：MCP 支援 agent 到 agent 或 agent 到 service 的協調與資料流轉。
+
+---
+
+## ✨ MCP 的優點
+
+* **可擴充性**：無需為每種工具重寫接口，只需透過 **MCP server 連接一次**。
+* **跨模型、跨平台通用**：支援多種 LLM 提供的 **Agent SDK**，例如 Claude、OpenAI Agents SDK 等。
+* **安全與審計**：可管理 tool 權限，提供 metadata、日誌與可追溯性。
+
+---
+
+## ✅ 小結
+
+MCP 是一種統一、開源、安全且跨模組通用的介面協定，使得 **AI Agent** 能夠像使用 **USB‑C** 的方式，**一次性連接多種工具與資料源**，並執行雙向交互。已被多家領導者採用，推動了 **AI Agent 的生態建設**。
+
+---
+
+### A practical example of how **MCP** (Model Context Protocol) works in real-world use:
+
+## 🧩 Example: Adding a Postgres MCP Server with Claude CLI
+
+Using the `claude` CLI, you can register an MCP server that lets Claude communicate with a PostgreSQL database:
+
+```bash
+# Register a local Postgres MCP server
+claude mcp add postgres-server /path/to/postgres-mcp-server \
+  --connection-string "postgresql://user:pass@localhost:5432/mydb"
+```
+
+Once registered, you can query your database directly in Claude:
+
+```
+> describe the schema of our users table
+> what are the most recent orders in the system?
+```
+
+This setup uses **MCP JSON‑RPC messages** under the hood to:
+
+1. Discover schema (`resources`)
+2. Execute queries (`tools`)
+3. Return structured JSON results to Claude for interpretation and response ([docs.anthropic.com][1]).
+
+---
+
+## 🔧 Another Example: C# MCP Server Setup
+
+With the **C# MCP SDK**, you can build a simple MCP server like this:
+
+**Program.cs:**
+
+```csharp
+using ModelContextProtocol.Server;
+using Microsoft.Extensions.Hosting;
+
+var builder = Host.CreateDefaultBuilder(args)
+  .ConfigureServices(services => {
+    services.AddMcpServer()
+      .AddFileSystemTool()    // Expose tools like list/read/write
+      .AddPostgresProvider(); // Expose queries to a PostgreSQL DB
+  });
+await builder.RunConsoleAsync();
+```
+
+This spins up a server exposing **file system** and **Postgres** tools via MCP for any client—including Claude or OpenAI—to connect securely ([devblogs.microsoft.com][2]).
+
+---
+
+## ⚙️ Workflow Summary
+
+1. **Server** defines available tools/resources (DB queries, file actions).
+2. **Client** (AI agent) discovers them via MCP metadata.
+3. **Client** invokes tools (e.g., `mcp_tool_call`) to fetch or manipulate data.
+4. **Server** responds with structured JSON and metadata back to the LLM.
+
+---
+
+### ✅ Why this matters
+
+* **Modular**: Add new data sources by plugging into MCP.
+* **Standardized**: No need to create custom APIs for each tool.
+* **Secure**: Clients only access registered tools with defined permissions.
+* **Multi-language**: SDKs in Python, C#, TS, Java, etc., allow broad adoption.
+
+---
+
+### 🏠 在哪裡部署 MCP Server 比較合適？
+
+#### 本地 (Local Machine)
+
+* **僅限於你自己的主機**，例如 Claude Desktop 使用的 MCP 就是本地透過 `stdio` 通訊。
+* 好處是：完全不對外公開，安全性高、架設簡單，非常適合個人或內部開發測試環境。
+
+#### 私有雲 (Private Cloud/VPC)
+
+* MCP Server 可部署在你自己的私有雲或公司 VPC 中（如 Kubernetes、AWS VPC、GCP Private Cloud）。
+* 可以使用 HTTP(S) 或 SSE 通訊，并設置企業標準的安全機制，如 OAuth/LB/WAF/VPN/ACL 等。
+* 適合企業場景，可從內部工具或雲端 Agent 安全呼叫服務，無需走公共互聯網。
+
+---
+
+### ✅ 總結比較
+
+| 部署位置           | 通訊方式                 | 安全性               | 使用場景            |
+| -------------- | -------------------- | ----------------- | --------------- |
+| **本地 (Local)** | stdio (stdin/stdout) | ⭐⭐⭐⭐ 非常高（僅本地）     | 個人桌面、開發測試環境     |
+| **私有雲/VPC**    | HTTP(S) / SSE        | ⭐⭐⭐⭐ 高（私有網路 + 認證） | 企業內部、多 Agent 結合 |
+| **公共雲或 Web**   | HTTP 當然可用，但需**謹慎暴露** | ⭐ 取決於安全設置         | 需大量外部腳本或客戶端時    |
+
+---
+
+### 🔐 為什麼選擇這樣？
+
+* **資料與 schema 不會外洩**：只要 MCP Server 未對網際網路開放，**schema 不會暴露**。
+* **使用讀/寫權限控制**：可設「最小權限原則」，例如僅 Read-Only 帳號。
+* **可設定 tool-level ACL**：限制哪些命令／工具可以被外部 client 呼叫。
+* **安全性高**：MCP Server 架設在本地或私有雲環境，能確保資料安全與控制範圍。
+* **可控性強**：你可以完全控制 MCP Server 的配置與行為，無需依賴第三方服務。
+
+「MCP Server 架設在 Local 或你的 Private Cloud 環境就可以確保持有安全且可控的使用範圍。」使用 Docker Compose 或 Kubernetes）並加入安全配置指引。
+
+---
+
+### **Resources**
+- We can provide an LLM with resources to **improve its expertise**
+    我們可以為 LLM 提供資源，以提升其專業能力
+- Basically, this just means **shoving data relevant to the question into the prompt**
+    基本上，就是把與問題相關的資料塞入 prompt 中
+- There are techniques like **RAG** to get really smart at picking **relevant content**
+    有一些技巧—例如 **RAG（Retrieval Augmented Generation）**—可以更精準地挑選相關內容
+
+---
+
+## 💡 關鍵概念說明
+
+1. **Shoving data into the prompt**
+   指的是將相關的資料集或片段（如文章、產品資訊、數據庫內容）加入到 prompt 的 context 中，讓 LLM 回答時可以根據這些「在 situ」的資訊進行推理。
+
+2. **RAG（檢索增強生成）**
+   是一種常見做法，分為三步：索引 → 檢索 → 生成。
+
+   * 先將資料切片並轉為向量儲存（如向量資料庫）
+   * 根據使用者提問檢索最相關的片段
+   * 把這些片段補充到 prompt 前，再請 LLM 回答
+     這能有效提升回應的**準確度、事實性與時效性** 。
+
+3. **為何這麼做？**
+
+   * 不需重訓模型，只靠 prompt 即可擴充知識
+   * 降低幻覺發生率（hallucination），因為模型有實證資料作基礎 
+   * 可動態更新資料，保持資訊新鮮，仍不用重新訓練
+
+---
+
+## 🧾 小結
+
+* **"Shoving data into prompt"** 是 RAG 的核心思路：先檢索資料，再塞入 prompt 中
+* **RAG pipeline** 三步驟：**向量化 → 檢索 → 補 prompt → 生成** 
+* 好處是：**準確度高、更新靈活、低成本部署**
+
+---
+
+### Tools and Techniques
+“Tools” 为 LLM 带来 **自主操作能力（autonomy）**，意思是让语言模型不仅能“思考”，还可以**主动执行实际动作**，如：
+
+* 💾 **查询数据库（query a database）**
+* 🤖 **呼叫其他 LLM（message other LLMs）**
+* 🌐 **Philips Hue** 開燈 關燈 變換顏色等
+
+聽起來可能有點可怕──“OpenAI 能進入我的電腦？”──但**真相其實很平凡**：
+這些 “tools” 就像被**授權**的**函式**或**微服務**，只是讓 LLM 可以透過「發出指令 → 待命執行並回傳結果」的方式與外部系統互動，而非真正入侵你的資料 。
+
+---
+
+## ✅ 示例：LLM 結合 Tools 的實際場景
+
+### 🔧 範例 1：自然語言查資料（Text-to-SQL Agent）
+
+* **使用者說**：「告訴我上個月的總銷售額？」
+* **LLM 判斷**：需要用 SQL 查資料
+* **呼叫 tool**：`generate_sql_query(user_input)`
+* **執行 tool**：送至資料庫
+* **取得結果**，返回給 LLM
+* **LLM 組合答覆**：「上個月總銷售額是 \$50,000。」
+  這個過程中，LLM 主動分析需求、選用 tool、處理結果，展示自主操作。
+
+---
+
+### 🔧 範例 2：多 LLM 協作
+
+* LLM 可以呼叫其他 LLM，例如讓 Claude **審查** GPT 產出的結果
+* 相互對話、校對，形成一個多人協同代理系統
+  這就是「message other LLMs」，提升品質與安全性。
+
+---
+
+### 🎯 為什麼 Tools 增加了自主性
+
+* **主動決策**：LLM 不再只是單一輸出，而是在**實際流程控制中**做出調用選擇
+* **互聯外部系統**：如資料庫、API、Web、工具，構成閉環回饋流程
+* **更大問題處理能力**：可進行動態查驗、回饋、自我修正，遠超傳統“只回應 prompt”的方式
+
+---
+
+## ⚠️ 工具使用的風險 & 防護措施
+
+* 🧠 **潛在濫用**：具備大規模 API 呼叫資源可造成資安風險或資料洩漏 
+* 🛡️ **防護對策**：需要設定 guardrails（如 API 呼叫限制、權限控管、輸入驗證）來保障安全。
+
+---
+
+## 🧩 小結
+
+“Tools” 給 LLM 帶來了真正的 **行動能力**，讓它們可以自行：
+
+1. **決定何時做什麼**
+2. **呼叫哪些工具或其他 LLM**
+3. **解析回傳資料並做決策**
+
+這不只是假裝強大，而是實際上讓 LLM 成為可以 **做事」的智能體**，而非僅僅「回應」的聊天機器人。
+
+---
+
+####　**“Tool Calling in Practice + Resources” 流程圖**：
+
+```
+User Prompt + Relevant Resources ──▶ LLM
+                 │
+                 ▼
+        ┌── Decision: Use Tool? ──┐
+        │ Yes                      │ No
+        ▼                          ▼
+  LLM outputs JSON             LLM直接生成回答
+  { "tool": name, "args": {...} }
+        │
+        ▼
+   Code parses JSON
+   if tool == X: execute X(args)
+        ▼
+   Execute tool/API/DB
+        ▼
+   Receive result
+        │
+        ▼
+  Append result to prompt context
+  { role: "tool", content: result }
+        │
+        ▼
+Prompt LLM again (with resources + tool result)
+        ▼
+   LLM generates final response
+```
+
+## 🧠 流程說明
+
+1. **Prompt + Resources**
+
+   * 使用者輸入問題，系統先抓取**相關資料**（如航班票價、公司資訊），將其拼入 prompt 中作為 context，提升 LLM 的背景知識。
+
+2. **LLM 判斷 & 工具呼叫**
+
+   * LLM 若偵測需要查票價或計算，就以 JSON 格式回傳工具呼叫指令，如 `{"tool": "get_ticket_price", "args": {"city":"Paris"}}`。
+
+3. **程式接收 & 執行工具**
+
+   * 程式解析 JSON，執行對應工具（例如呼叫資料庫/API）。
+
+4. **工具取得結果**
+
+   * 工具從資料庫或 API 拿到答案（如：Paris 機票 500 USD）。
+
+5. **結果回饋 LLM**
+
+   * 將結果以 `role: "tool"` 的訊息形式補回 LLM prompt 裡，讓模型基於結果再回答。
+
+6. **LLM 最終回應**
+
+   * LLM 重新生成回答，整合插入的 context 與工具結果，提供完整答案。
+
+---
+
+## 🗝️ 核心概念整合
+
+* **Resources**：透過如 RAG 技術，智能選取最相關資料並塞入 prompt，讓模型更專業 。
+* **Tool Calling**：LLM 可自主決定是否呼叫工具，並以結構化 JSON 格式發出呼叫，再由後端執行。
+* **JSON + if parsing**：後端用 if 判斷工具名稱並執行，屬極簡架構，無魔法，卻力量強大。
+
+---
+
+## ✅ 優勢一覽
+
+| 功能     | 好處                              |
+| ------ | ------------------------------- |
+| 資料注入   | 升級專業度、降低幻覺現象                    |
+| 工具自主呼叫 | 模型可選擇是否使用工具，提升解題彈性              |
+| 構建流程透明 | 全流程 JSON 與程式控制，支援監控與 guardrails |
+
+---
+
+#### Practice example (get reply from ChatGPT and Evaluate answers by gemini-2.0-flash):
+1_foundations/3_lab3.ipynb
+    - What is your greatest accomplishment?
+    - What is your greatest failure?
+    - What is a challenge that you encountered and needed to overcome?
+
+    Evaluation:
+    - What is your current role?
+    - What is your current salary?
+    - What is your current location?
+    - Do you hold a patent?
+    - Do you have a flight license?
+    - Do you have a driver's license?

@@ -81,7 +81,7 @@ results = await asyncio.gather(
 
 - 1️⃣ **Create an instance of** `Agent`
 - 2️⃣ **Use** `with trace()` **to track the agent**
-- 3️⃣ **Call** `await runner.run()` **to run the agent**
+- 3️⃣ **Call** `await Runner.run()` **to run the agent**
 
 ---
 
@@ -136,3 +136,13 @@ https://platform.openai.com/traces
     - 🔁 **Tools vs Handoffs**
 
 ---
+
+### SendGrid - Sending Emails
+
+- https://sendgrid.com/
+- https://app.sendgrid.com/guide => Settings => API Keys 
+    - Name: Agents-AI
+    - Permissions: Full Access
+    - Create Key
+
+2_openai/2_lab2.ipynb

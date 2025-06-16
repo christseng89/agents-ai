@@ -121,3 +121,18 @@ asyncio.run(main())
 
 2_openai/1_lab1.ipynb
 https://platform.openai.com/traces
+
+## Week 2 Day 2
+
+---
+
+### **Automated Sales Outreach**
+
+**We will build:**
+
+- 📝 **A workflow of Agent calls**
+- 🔧 **An agent that can use a tool**
+- 📊 **An agent that can call on other agents**
+    - 🔁 **Tools vs Handoffs**
+
+---

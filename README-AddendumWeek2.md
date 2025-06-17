@@ -146,3 +146,35 @@ https://platform.openai.com/traces
     - Create Key
 
 2_openai/2_lab2.ipynb
+
+## Week 2 Day 3
+### **Recap – Day2 - 3 interactions**
+
+* 🛠️ **Tools**
+* 🧰 **Agents as Tools**
+* 🤝 **Handoffs**
+
+---
+
+**Adding to the mix**
+
+* 👥 **Models other than OpenAI**
+* 🧱 **Structured Outputs**
+* 🚆 **Guardrails**
+
+---
+
+### Guardrails
+
+A **guardrail** in Agent AI is a **rule or constraint** that ensures the agent behaves safely and predictably. It can:
+
+* **Validate inputs** (e.g., block names or PII)
+* **Limit tool use** (e.g., restrict sending emails)
+* **Control outputs** (e.g., remove unsafe content)
+* **Stop loops or errors** (e.g., max 5 turns)
+
+It’s like a **safety filter** around the agent's actions.
+
+---
+
+2_openai/3_lab3.ipynb

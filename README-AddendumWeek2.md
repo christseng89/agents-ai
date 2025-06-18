@@ -213,3 +213,23 @@ search_agent = Agent(
 # HOW_MANY_SEARCHES = 3 # Start from 3 searches to Test
 HOW_MANY_SEARCHES = 10 # Final run with 10 searches
 ```
+
+## Week 2 Day 5
+
+### Essential use-case: Deep Research
+- Now as a python application, featuring Gradio
+
+2_openai/deep_research/deep_research.py
+
+```cmd
+cd 2_openai\deep_research
+py deep_research.py
+   - What are some of the most exciting commercial applications of Autonomous Agentic AI as of June 2025?
+   - What are some of the most exciting commercial applications of Autonomous Agentic AI for Financial Institutions as of June 2025?
+   - Latest AI Agent frameworks in 2025
+```
+
+### And now, the big challenge
+- Start by coming up with 3 clarifying questions based on the query
+- Tune the searches taking into account the clarifications
+- Make the Manager an Agent with agents-as-tools and handoffs

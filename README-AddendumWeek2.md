@@ -233,3 +233,45 @@ py deep_research.py
 - Start by coming up with 3 clarifying questions based on the query
 - Tune the searches taking into account the clarifications
 - Make the Manager an Agent with agents-as-tools and handoffs
+
+#### Deploy deep_research.py to Hugging Face Spaces
+
+```notes
+# Add files
+app.py
+requirements.txt
+deep_research\__init__.py
+
+revise code to use 'deep_research.'
+- deep_research\deep_research.py
+- deep_research\research_manager.py
+```
+
+```cmd
+cd ..
+py app.py
+
+uv run gradio deploy
+
+```
+
+### 📦uv run gradio deploy Work Through
+Creating new Spaces Repo in 'D:\development\agents-ai\2_openai'. Collecting metadata, press Enter to accept default 
+value.
+Enter Spaces app title [2_openai]: **DEEP RESEARCH**
+Formatted to DEEP_RESEARCH. 
+Enter Gradio app file : **app.py**
+Enter Spaces hardware (cpu-basic, cpu-upgrade, cpu-xl, zero-a10g, t4-small, t4-medium, l4x1, l4x4, l40sx1, l40sx4, l40sx8, a10g-small, a10g-large, a10g-largex2, a10g-largex4, a100-large, h100, h100x8) [cpu-basic]:
+Any Spaces secrets (y/n) [n]: **y**
+Enter secret name (leave blank to end): **OPENAI_API_KEY**
+Enter secret value for OPENAI_API_KEY: **sk-proj-ypFvL65Ev...**
+Enter secret name (leave blank to end): **SENDGRID_API_KEY**
+Enter secret value for SENDGRID_API_KEY: **SG.QXJhafDnStuLg...**
+Enter secret name (leave blank to end):
+Create Github Action to automatically update Space on 'git push'? [n]: **n**
+Space available at https://huggingface.co/spaces/christseng898/DEEP_RESEARCH
+
+#### Special Notes:
+- **README.md** will be created in the folder 2_openai after deploy.
+
+- https://huggingface.co/spaces/christseng898/DEEP_RESEARCH

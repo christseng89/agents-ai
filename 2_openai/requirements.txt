@@ -1,0 +1,8 @@
+# requirements.txt
+gradio
+openai
+openai-agents
+python-dotenv
+aiohttp
+pydantic
+sendgrid

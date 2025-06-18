@@ -178,3 +178,38 @@ It’s like a **safety filter** around the agent's actions.
 ---
 
 2_openai/3_lab3.ipynb
+
+## Week 2 Day 4
+### Deep Research
+- **Deep Research** is a technique where an agent uses other agents to gather information.
+- It’s like a **team of agents** working together to solve a problem.
+- **Example**: An agent that finds the best restaurant by asking other agents for reviews, menus, and prices.
+
+### Using Tools, Structured Outputs and Hosted Tools
+
+### OpenAI Hosted Tools
+
+OpenAI Agents SDK includes the following **Hosted Tools**:
+
+- The `WebSearchTool` lets an agent search the web.  
+- The `FileSearchTool` allows retrieving information from your OpenAI Vector Stores.  
+- The `ComputerTool` allows automating computer use tasks like taking screenshots and clicking.
+
+```code
+SEARCH_INSTRUCTIONS = "You are a research assistant. Given a search ... return a summary of the top results."
+
+search_agent = Agent(
+    name="Search Agent",
+    instructions=SEARCH_INSTRUCTIONS,
+    tools=[WebSearchTool(search_context_size="low")],
+    model="gpt-4o-mini",
+    model_settings=ModelSettings(tool_choice="required"),
+)
+```
+
+2_openai/4_lab4.ipynb
+
+```note
+# HOW_MANY_SEARCHES = 3 # Start from 3 searches to Test
+HOW_MANY_SEARCHES = 10 # Final run with 10 searches
+```

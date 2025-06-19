@@ -263,3 +263,57 @@ crewai run
 │  Name: crew                                                                   │
 │  ID: 3db38bf0-d97c-4ebb-8be4-04037bfe6f2c                                     │
 ╰───────────────────────────────────────────────────────────────────────────────╯
+
+## Week 3 Day 2
+
+### ✅ Recap
+- 🤖 **Agent**：an autonomous unit, with an LLM, a role, a goal, a backstory, memory, tools
+- 🧡 **Task**：a specific assignment to be carried out, with a description, expected output, agent
+- 🔵 **Crew**：a team of **Agents** and **Tasks**; either:
+  • **Sequential**: run tasks in order they are defined
+  • **Hierarchical**: use a Manager LLM to assign
+
+---
+
+### 🪜 Five Steps
+
+**1️⃣** Create the project with:
+ `crewai create crew my_project`
+
+**2️⃣** Fill in the config YAML files to define the
+ **Agents** and **Tasks**
+
+**3️⃣** Complete the `crew.py` module to create the
+ **Agents**, **Tasks**, and **Crew**, referencing the config
+
+**4️⃣** Update `main.py` to set any config and run
+
+**5️⃣** Run with:
+ `crewai run`
+
+---
+
+### 🔍 Going deeper
+
+🛠 **Tools**
+ Equipping agents with capabilities
+
+ℹ️ **Context**
+ Information passed from 1 task to another
+
+---
+
+### The World's Fastest & Cheapest Google Search API
+https://serper.dev/
+
+- Sign up for a free account samfire5201@gmail.com
+- Get your API key
+
+### Financial Researcher Crew 'company': 'Apple'
+
+```
+cd 3_crew\financial_researcher
+crewai run
+```
+
+

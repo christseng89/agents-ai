@@ -586,7 +586,11 @@ These are often described as **"Coder Agents** with coding skills.
 
 ---
 
+### Using PowerShell to run CrewAI
+CrewAI can be run from the command line using **PowerShell**, which is a powerful scripting language
+
 ```
 cd 3_crew\coder
 crewai run
 ```
+---

@@ -586,11 +586,29 @@ These are often described as **"Coder Agents** with coding skills.
 
 ---
 
-### Using PowerShell to run CrewAI
-CrewAI can be run from the command line using **PowerShell**, which is a powerful scripting language
+- Ensure Docker is **running**
 
-```
+
+```cmd
 cd 3_crew\coder
 crewai run
 ```
 ---
+
+## Week 3 Day 5 - **CrewAI Engineering Team**
+
+### **Engineering Team**
+
+🧑‍🏭 Engineering Lead
+🧑‍💻 Backend Engineer
+🖥️ Frontend Engineer
+🧪 Test Engineer
+
+---
+
+- Ensure Docker is **running**
+
+```cmd
+cd 3_crew\engineering_team
+crewai run
+```

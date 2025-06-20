@@ -393,3 +393,200 @@ from .tools.push_tool import PushNotificationTool
             ...)
 
 ```
+
+## Week 3 Day 4 - **CrewAI Memory**
+### **CrewAI Memory – more prescriptive**
+
+🟡 **Short-Term Memory**
+Temporarily stores recent interactions and outcomes using RAG, enabling agents to access relevant information during the current executions.
+
+🟡 **Long-Term Memory**
+Preserves valuable insights and learnings, building knowledge over time.
+
+🟡 **Entity Memory**
+Information about people, places and concepts encountered during tasks, facilitating deeper understanding and relationship mapping. Uses RAG for storing entity information.
+
+🟠 **Contextual Memory**
+Maintains the context of interactions by combining all the above.
+
+🔵 **User Memory**
+Stores user-specific information and preferences, enhancing personalization and user experience (this is up to us to manage and include in prompts).
+
+🧠 Summary Table:
+| Memory Type       | Uses Vector DB (RAG) | Notes                                                |
+| ----------------- | -------------------- | ---------------------------------------------------- |
+| Short-Term Memory | ✅ Yes                | Stores recent task context in embedding format       |
+| Entity Memory     | ✅ Yes                | Embeds entity knowledge for retrieval                |
+| Long-Term Memory  | ❌/🔄 Optional        | May store structured insights, optionally vectorized |
+| Contextual Memory | ❌ Indirectly         | Aggregates others; not a store itself                |
+| User Memory       | ❌ No                 | Structured user-specific data; not vector-based      |
+
+---
+
+```code crew.py
+...
+from crewai.memory import LongTermMemory, ShortTermMemory, EntityMemory
+from crewai.memory.storage.rag_storage import RAGStorage
+from crewai.memory.storage.ltm_sqlite_storage import LTMSQLiteStorage
+...
+    @agent
+    def trending_company_finder(self) -> Agent:
+        return Agent(
+            config=self.agents_config['trending_company_finder'],
+            tools=[SerperDevTool()], 
+            memory=True # Enable memory for the trending company finder agent
+        )
+
+    ...
+    
+    @agent
+    def stock_picker(self) -> Agent:
+        return Agent(
+            config=self.agents_config['stock_picker'], 
+            tools=[PushNotificationTool()], 
+            memory=True # Enable memory for the stock picker agent
+        )
+    ...
+    @crew
+    def crew(self) -> Crew:
+        """Creates the StockPicker crew"""
+
+        # ❌ Manager 不應有 tools, CrewAI Manager agent 的角色定位是「協調者」，而不是執行者
+        manager = Agent(
+            config=self.agents_config['manager'],
+            allow_delegation=True
+        )
+
+        # Long-term memory for persistent storage across sessions
+        long_term_memory = LongTermMemory(
+            storage=LTMSQLiteStorage(
+                db_path="./memory/long_term_memory_storage.db"
+            )
+        )            
+
+        # Short-term memory for current context using RAG
+        short_term_memory = ShortTermMemory(
+            storage = RAGStorage(
+                embedder_config={
+                    "provider": "openai",
+                    "config": {
+                        "model": 'text-embedding-3-small'
+                    }
+                },
+                type="short_term",
+                path="./memory/"
+            )
+        )
+        
+        # Entity memory for tracking key information about entities
+        entity_memory = EntityMemory(
+            storage=RAGStorage(
+                embedder_config={
+                    "provider": "openai",
+                    "config": {
+                        "model": 'text-embedding-3-small'
+                    }
+                },
+                type="short_term",
+                path="./memory/"
+            )
+        )
+        
+        return Crew(
+            agents=self.agents,
+            tasks=self.tasks, 
+            process=Process.hierarchical, # Hierarchical process for structured task management
+            verbose=True,
+            manager_agent=manager,
+            memory=True,
+            long_term_memory = long_term_memory,
+            short_term_memory = short_term_memory,
+            entity_memory = entity_memory,
+        )
+
+```
+✅ Memory Summary Table
+
+| On disk (what you saw)               | Comes from …                    | Memory type                           | Backend             |
+| ------------------------------------ | ------------------------------- | ------------------------------------- | ------------------- |
+| `memory/long_term_memory_storage.db` | `LTMSQLiteStorage`              | **Long-Term Memory**                  | SQLite              |
+| `memory/chroma.sqlite3`              | `RAGStorage` (Chroma) | **Short-Term Memory** (vector based)            | Chroma vector store |
+| `memory/<uuid>/{data_level0.bin, …}` | `RAGStorage` (FAISS)            | **Entity Memory** (also vector based) | FAISS index         |
+
+`memory/chroma.sqlite3`: 📦 Chroma 向量資料庫的 SQLite 儲存格式。
+
+### Short-Term Memory vs Entity Memory
+While both **`ShortTermMemory` and `EntityMemory` technically use short-term vector storage**, they serve **very different purposes** in an AI agent's memory system. Here's the key distinction:
+
+---
+
+### 🧠 1. `ShortTermMemory`（短期記憶）
+
+| 項目              | 說明                          |
+| --------------- | --------------------------- |
+| **目標**          | 保持「最近上下文」的記憶，用來幫助當前對話或任務的理解 |
+| **儲存內容**        | 最近的任務輸出、對話紀錄、推理過程等通用資訊      |
+| **使用場景**        | 對話銜接、多輪推理、分析前一步驟結果時         |
+| **是否具備語意檢索功能？** | ✅ 是（例如用 embedding 找回最近相關句子） |
+
+🔁 類似於人類的「剛剛說過什麼」。
+
+---
+
+### 🧬 2. `EntityMemory`（實體記憶）
+
+| 項目              | 說明                                 |
+| --------------- | ---------------------------------- |
+| **目標**          | 長期追蹤「具名實體」的資訊，例如某公司、某人、某地點         |
+| **儲存內容**        | 關於特定實體的屬性、關係、背景，例如 `OpenAI 是由誰創立？` |
+| **使用場景**        | 多輪任務中持續提及相同對象，並需要一致性回答             |
+| **是否具備語意檢索功能？** | ✅ 是（但聚焦於特定實體）                      |
+
+🔁 類似於人類腦中對「熟人」或「公司」的記憶片段。
+
+---
+
+### 📊 對比總表
+
+| 特性     | `ShortTermMemory` | `EntityMemory`          |
+| ------ | ----------------- | ----------------------- |
+| 用途     | 幫助 AI 記住最近事件      | 幫助 AI 記住具名實體的背景         |
+| 例子     | 上一步分析結果、使用者問句     | 公司名稱、人物、地名              |
+| 記憶持續性  | 一次任務內（通常會清除）      | 多次任務可共享（如設定 Entity key） |
+| 向量存儲方式 | 通用段落＋embedding    | 實體關聯資訊＋embedding        |
+| 常用任務   | RAG context, 推理銜接 | 知識抽取、背景延續               |
+
+---
+
+### ✅ 結論
+
+* `ShortTermMemory`: 記「最近事件的語境」
+* `EntityMemory`: 記「特定主體的背景與關聯」
+
+可以**同時啟用兩者**來讓 Agent 表現更像人類：又能記住剛剛說什麼，也能牢記你是誰、你說過什麼事。
+
+---
+
+### **Giving coding skills to an Agent**
+
+It’s **<span style="color:red">hard</span>** and it’s **<span style="color:orange">complex</span>**, but you can have an Agent
+in Crew that has the ability to write code, execute it
+in a **Docker container**, and investigate the results.
+
+**<span style="color:gold">Except it’s not.</span>**
+
+```python
+Agent(
+    allow_code_execution=True,
+    code_execution_mode="safe"
+)
+```
+
+These are often described as **"Coder Agents** with coding skills.
+
+---
+
+```
+cd 3_crew\coder
+crewai run
+```

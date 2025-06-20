@@ -43,14 +43,14 @@ class StockPicker():
             config=self.agents_config['trending_company_finder'],
             tools=[SerperDevTool()], 
             memory=True
-            )
+        )
     
     @agent
     def financial_researcher(self) -> Agent:
         return Agent(
             config=self.agents_config['financial_researcher'], 
             tools=[SerperDevTool()]
-            )
+        )
 
     @agent
     def stock_picker(self) -> Agent:
@@ -58,7 +58,7 @@ class StockPicker():
             config=self.agents_config['stock_picker'], 
             tools=[PushNotificationTool()], 
             memory=True
-            )
+        )
     
     @task
     def find_trending_companies(self) -> Task:
@@ -90,7 +90,42 @@ class StockPicker():
             config=self.agents_config['manager'],
             allow_delegation=True
         )
-            
+
+        # Long-term memory for persistent storage across sessions
+        long_term_memory = LongTermMemory(
+            storage=LTMSQLiteStorage(
+                db_path="./memory/long_term_memory_storage.db"
+            )
+        )            
+
+        # Short-term memory for current context using RAG
+        short_term_memory = ShortTermMemory(
+            storage = RAGStorage(
+                embedder_config={
+                    "provider": "openai",
+                    "config": {
+                        "model": 'text-embedding-3-small'
+                    }
+                },
+                type="short_term",
+                path="./memory/"
+            )
+        )
+        
+        # Entity memory for tracking key information about entities
+        entity_memory = EntityMemory(
+            storage=RAGStorage(
+                embedder_config={
+                    "provider": "openai",
+                    "config": {
+                        "model": 'text-embedding-3-small'
+                    }
+                },
+                type="short_term",
+                path="./memory/"
+            )
+        )
+        
         return Crew(
             agents=self.agents,
             tasks=self.tasks, 
@@ -98,35 +133,7 @@ class StockPicker():
             verbose=True,
             manager_agent=manager,
             memory=True,
-            # Long-term memory for persistent storage across sessions
-            long_term_memory = LongTermMemory(
-                storage=LTMSQLiteStorage(
-                    db_path="./memory/long_term_memory_storage.db"
-                )
-            ),
-            # Short-term memory for current context using RAG
-            short_term_memory = ShortTermMemory(
-                storage = RAGStorage(
-                        embedder_config={
-                            "provider": "openai",
-                            "config": {
-                                "model": 'text-embedding-3-small'
-                            }
-                        },
-                        type="short_term",
-                        path="./memory/"
-                    )
-                ),            # Entity memory for tracking key information about entities
-            entity_memory = EntityMemory(
-                storage=RAGStorage(
-                    embedder_config={
-                        "provider": "openai",
-                        "config": {
-                            "model": 'text-embedding-3-small'
-                        }
-                    },
-                    type="short_term",
-                    path="./memory/"
-                )
-            ),
+            long_term_memory = long_term_memory,
+            short_term_memory = short_term_memory,
+            entity_memory = entity_memory,
         )

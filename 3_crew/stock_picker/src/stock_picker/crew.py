@@ -39,18 +39,26 @@ class StockPicker():
 
     @agent
     def trending_company_finder(self) -> Agent:
-        return Agent(config=self.agents_config['trending_company_finder'],
-                     tools=[SerperDevTool()], memory=True)
+        return Agent(
+            config=self.agents_config['trending_company_finder'],
+            tools=[SerperDevTool()], 
+            memory=True
+            )
     
     @agent
     def financial_researcher(self) -> Agent:
-        return Agent(config=self.agents_config['financial_researcher'], 
-                     tools=[SerperDevTool()])
+        return Agent(
+            config=self.agents_config['financial_researcher'], 
+            tools=[SerperDevTool()]
+            )
 
     @agent
     def stock_picker(self) -> Agent:
-        return Agent(config=self.agents_config['stock_picker'], 
-                     tools=[PushNotificationTool()], memory=True)
+        return Agent(
+            config=self.agents_config['stock_picker'], 
+            tools=[PushNotificationTool()], 
+            memory=True
+            )
     
     @task
     def find_trending_companies(self) -> Task:
@@ -73,12 +81,11 @@ class StockPicker():
         )
     
 
-
-
     @crew
     def crew(self) -> Crew:
         """Creates the StockPicker crew"""
 
+        # ❌ Manager 不應有 tools, CrewAI Manager agent 的角色定位是「協調者」，而不是執行者
         manager = Agent(
             config=self.agents_config['manager'],
             allow_delegation=True
@@ -87,7 +94,7 @@ class StockPicker():
         return Crew(
             agents=self.agents,
             tasks=self.tasks, 
-            process=Process.hierarchical,
+            process=Process.hierarchical, # Hierarchical process for structured task management
             verbose=True,
             manager_agent=manager,
             memory=True,

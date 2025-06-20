@@ -14,7 +14,7 @@ def run():
     Run the research crew.
     """
     inputs = {
-        'sector': 'Technology',
+        'sector': os.getenv("SECTOR", 'Technology'),
         "current_date": str(datetime.now())
     }
 

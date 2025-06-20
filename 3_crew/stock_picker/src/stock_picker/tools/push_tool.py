@@ -25,5 +25,10 @@ class PushNotificationTool(BaseTool):
 
         print(f"Push: {message}")
         payload = {"user": pushover_user, "token": pushover_token, "message": message}
-        requests.post(pushover_url, data=payload)
-        return '{"notification": "ok"}'
+
+        try:
+            response = requests.post(pushover_url, data=payload)
+            response.raise_for_status()
+            return '{"notification": "ok"}'
+        except Exception as e:
+            return f'{{"error": "Push failed: {str(e)}"}}'

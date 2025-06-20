@@ -264,7 +264,7 @@ crewai run
 │  ID: 3db38bf0-d97c-4ebb-8be4-04037bfe6f2c                                     │
 ╰───────────────────────────────────────────────────────────────────────────────╯
 
-## Week 3 Day 2
+## Week 3 Day 2 - Financial Researcher Crew
 
 ### ✅ Recap
 - 🤖 **Agent**：an autonomous unit, with an LLM, a role, a goal, a backstory, memory, tools
@@ -286,7 +286,7 @@ crewai run
 **3️⃣** Complete the `crew.py` module to create the
  **Agents**, **Tasks**, and **Crew**, referencing the config
 
-**4️⃣** Update `main.py` to set any config and run
+**4️⃣** Update `main.py` to setup any inputs and run
 
 **5️⃣** Run with:
  `crewai run`
@@ -316,4 +316,80 @@ cd 3_crew\financial_researcher
 crewai run
 ```
 
+## Week 3 Day 3 - Stock Picker Crew
+### 📂 Going deeper again..
 
+- 🧱  Structured outputs
+- 🧭  Custom Tool
+- ▦  Hierarchical process
+
+```cmd
+cd 3_crew\stock_picker
+crewai run
+```
+
+### 🧱 Structured Outputs
+
+crew.py
+```python
+...
+class TrendingCompany(BaseModel):
+    """ A company that is in the news and attracting attention """
+    name: str = Field(description="Company name")
+    ticker: str = Field(description="Stock ticker symbol")
+    reason: str = Field(description="Reason this company is trending in the news")
+
+class TrendingCompanyList(BaseModel):
+    """ List of multiple trending companies that are in the news """
+    companies: List[TrendingCompany] = Field(description="List of companies trending in the news")
+
+class TrendingCompanyResearch(BaseModel):
+    """ Detailed research on a company """
+    name: str = Field(description="Company name")
+    market_position: str = Field(description="Current market position and competitive analysis")
+    future_outlook: str = Field(description="Future outlook and growth prospects")
+    investment_potential: str = Field(description="Investment potential and suitability for investment")
+
+class TrendingCompanyResearchList(BaseModel):
+    """ A list of detailed research on all the companies """
+    research_list: List[TrendingCompanyResearch] = Field(description="Comprehensive research on all trending companies")
+
+...
+
+```
+### 🧭 Custom Tool
+
+```python crew.py
+from .tools.push_tool import PushNotificationTool
+...
+    @agent
+    def stock_picker(self) -> Agent:
+        return Agent(
+            config=self.agents_config['stock_picker'], 
+            tools=[PushNotificationTool()], 
+            memory=True
+            )
+...            
+```
+### ▦  Hierarchical process
+
+```python crew.py
+    @crew
+    def crew(self) -> Crew:
+        """Creates the StockPicker crew"""
+
+        # ❌ Manager 不應有 tools, CrewAI Manager agent 的角色定位是「協調者」，而不是執行者
+        manager = Agent(
+            config=self.agents_config['manager'],
+            allow_delegation=True
+        )
+            
+        return Crew(
+            agents=self.agents,
+            tasks=self.tasks, 
+            process=Process.hierarchical, # Hierarchical process for structured task management
+            verbose=True,
+            manager_agent=manager,
+            ...)
+
+```

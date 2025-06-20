@@ -183,3 +183,7 @@ cython_debug/
 6_mcp/memory/*.db
 my_crew/
 *_report.md
+*_decision.md
+*_report.json
+*_companies.json
+memory/

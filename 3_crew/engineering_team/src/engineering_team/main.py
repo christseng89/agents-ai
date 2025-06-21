@@ -21,7 +21,7 @@ The system should be able to report the profit or loss of the user at any point 
 The system should be able to list the transactions that the user has made over time.
 The system should prevent the user from withdrawing funds that would leave them with a negative balance, or
  from buying more shares than they can afford, or selling shares that they don't have.
- The system has access to a function get_share_price(symbol) which returns the current price of a share, and includes a test implementation that returns fixed prices for AAPL, TSLA, GOOGL.
+ The system has access to a function get_share_price(symbol) which returns the current price of a share, and includes a test implementation that returns fixed prices for AAPL, MSFT, TSLA, GOOGL, NVDA, C.
 """
 module_name = "accounts.py"
 class_name = "Account"
@@ -39,7 +39,7 @@ def run():
 
     # Create and run the crew
     result = EngineeringTeam().crew().kickoff(inputs=inputs)
-
+    print(result.raw)
 
 if __name__ == "__main__":
     run()

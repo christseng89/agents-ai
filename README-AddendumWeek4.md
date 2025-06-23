@@ -343,3 +343,73 @@ Node      Node
 ⚫ **5** - Compile the Graph
 
 ---
+
+### Example: Simple Graph - ✅ 五個步驟的 Python 程式碼示例
+
+```python
+from typing import TypedDict
+from langgraph.graph import StateGraph
+
+# 步驟 1：定義 State schema —— 用 TypedDict 或 dataclass / BaseModel 均可
+class MyState(TypedDict):
+    value: str
+    count: int  # 加入計數欄位
+
+# 步驟 2：啟動 Graph Builder
+builder = StateGraph(MyState)
+
+# 步驟 3：建立 Node —— 一定要「回傳 dict」！
+def my_node(state: MyState) -> dict:
+    print(f"[Node] Received state: {state['value']}, count: {state['count']}")
+    return {
+        "value": "processed",
+        "count": state["count"] + 1
+    }   # 回傳處理後狀態與遞增次數
+
+builder.add_node("process", my_node)
+
+# ★ 新增一個終止用的空節點
+def end_node(state: MyState) -> dict:
+    completed = "completed"  # 這裡可以是任何處理邏輯
+    state["value"] = completed  # 明確改變 value
+    print(f"[Node] Received state: {state['value']}, count: {state['count']}")
+    return {
+        "value": completed  # 明確改變 value
+    }
+
+builder.add_node("end", end_node)
+
+# 步驟 4：Edge & 入口
+def counter(state: MyState) -> str:
+    # 若未達三次 → 回到 process；否則走向 end
+    if state["count"] >= 3:
+        return "end"
+    else:
+        return "process"
+
+builder.set_entry_point("process")
+# 指定 counter 以及「合法目的地」(process, end)
+builder.add_conditional_edges("process", counter, ["process", "end"])
+
+# 步驟 5：編譯並執行
+app = builder.compile()
+final_state: MyState = app.invoke({"value": "initial", "count": 0})
+print("Final state:", final_state.get("value"), ", count:", final_state.get("count"))
+
+```
+
+```cmd
+py testLangGraph.py
+```
+---
+
+### 🧠 說明
+
+| 步驟      | 說明                        |
+| ------- | ------------------------- |
+| `State` | 保存應用狀態資料，例如輸入、過程中產生的中介資料等 |
+| `Node`  | 執行實際的業務邏輯，對狀態進行變更         |
+| `Edge`  | 決定流程從哪個節點移動到哪個節點，可以依條件決策  |
+| `Graph` | 將 Node 與 Edge 組成完整工作流程圖   |
+
+---

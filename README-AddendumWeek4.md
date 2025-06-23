@@ -398,6 +398,9 @@ print("Final state:", final_state.get("value"), ", count:", final_state.get("cou
 
 ```
 
+
+## Week 4 Day 2
+
 ```cmd
 py testLangGraph.py
 ```
@@ -413,3 +416,5 @@ py testLangGraph.py
 | `Graph` | 將 Node 與 Edge 組成完整工作流程圖   |
 
 ---
+
+http://localhost:8888/lab/tree/4_langgraph/1_lab1.ipynb

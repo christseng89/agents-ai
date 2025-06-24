@@ -616,8 +616,8 @@ crewai run
 ```cmd
 cd output
 uv add gradio
-py test_accounts.py
-py app.py
+uv run py test_accounts.py
+uv run py app.py
 
 ```
 

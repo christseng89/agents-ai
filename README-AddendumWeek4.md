@@ -418,3 +418,127 @@ py testLangGraph.py
 ---
 
 http://localhost:8888/lab/tree/4_langgraph/1_lab1.ipynb
+
+## Week 4 Day 3
+
+### 🕳️ **LangGraph Going Deeper** 
+
+---
+
+🟨 **📈 LangSmith**
+
+🟧 **🧰 Tools - out of the box**
+  
+🟧 **🛠️ Tools - custom**
+
+🟦 **📷 CheckPointing**
+
+---
+
+### **The `Super-Step`**
+
+> 🟦 **"A super-step can be considered a single iteration over the graph nodes.
+> Nodes that run in parallel are part of the same super-step,
+> while nodes that run sequentially belong to separate super-steps."**
+
+---
+
+### 🧠 概念說明：
+
+* 一個 **Graph** 通常描述一個 **Super-Step**。
+* 每個 **Super-Step** 是一次代理人與工具間的互動，實現某個目的。
+
+---
+
+### 🟡 用法重點：
+
+* 每次與使用者的互動都是一次新的：
+
+  ```python
+  graph.invoke(state)
+  ```
+
+---
+
+### 📝 注意事項：
+
+> *The reducer handles updating state **during** a super-step
+> but **not between** super-steps.*
+
+> ✅ **Reducer 僅會在同一個 Super-Step 中更新狀態，
+> 不會在 Super-Step 之間傳遞狀態。**
+
+---
+
+### LangSmith 監控
+
+https://smith.langchain.com/ => Sign up => Set up tracing => Generate API Key
+
+```.env
+LANGSMITH_TRACING=true
+LANGSMITH_ENDPOINT="https://api.smith.langchain.com"
+LANGSMITH_API_KEY="lsv2_pt_00b4d03b11b74931..."
+LANGSMITH_PROJECT="pr-flowery-cloakroom-27"
+
+```
+
+http://localhost:8888/lab/tree/4_langgraph/2_lab2.ipynb
+
+### ✅ **LangGraph 的 `thread_id` 和 `checkpoint_id`**
+
+**LangGraph's `thread_id` and `checkpoint_id`** is designed specifically to support **branching, recovery, and multi-threaded conversational flows**. 
+
+---
+
+### Switching between `thread_id` 
+```cmd
+config = {"configurable": {"thread_id": "3"}}
+# OR
+config = {"configurable": {"thread_id": "2"}}
+# OR
+config = {"configurable": {"thread_id": "4"}}
+```
+
+### **Checkpointing**
+Here is the **diagram transcription** with a text-based representation and explanation:
+
+---
+
+### 📌 **Checkpointing**
+
+```text
+┌──────────────┐
+│ Define Graph │     ← Initialization step
+└──────┬───────┘
+       │
+       ▼
+┌──────────────┐
+│ Super-step 1 │     ← First run of a set of graph nodes
+└──────┬───────┘
+       │           ⤷ 🧠 Checkpoint saved
+       ▼
+┌──────────────┐
+│ Super-step 2 │     ← Next iteration of graph execution
+└──────┬───────┘
+       │           ⤷ 🧠 Checkpoint saved
+       ▼
+┌──────────────┐
+│ Super-step 3 │     ← Another run, possibly branching or continuing
+└──────────────┘
+                ⤷ 🧠 Checkpoint saved
+```
+
+🧠 = Represents a snapshot of the graph’s state stored after each **super-step**.
+
+---
+
+### 💡 Key Concepts:
+
+* **Define Graph**: Where you configure your nodes and flow.
+* **Super-step**: One full execution round through the graph (may include parallel nodes).
+* **Checkpoint**: A saved snapshot of the state at the end of each super-step.
+
+  * Enables *branching*, *recovery*, or *auditability*.
+  * Accessible by `checkpoint_id`.
+
+---

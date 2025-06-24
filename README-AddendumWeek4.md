@@ -542,3 +542,29 @@ Here is the **diagram transcription** with a text-based representation and expla
   * Accessible by `checkpoint_id`.
 
 ---
+
+## Week 4 Day 4 - Sidekick
+
+### **Going Deeper**
+
+🛠️ **Introducing a powerful tool**
+
+🧱 **Structured outputs**
+
+🔷 **Multi-agent workflow**
+
+---
+
+### Install Playwright
+
+```cmd
+uv pip install playwright
+uv run playwright --version
+  Version 1.52.0
+uv run playwright install
+```
+
+http://localhost:8888/lab/tree/4_langgraph/3_lab3.ipynb
+
+#### Sidekick
+http://localhost:8888/lab/tree/4_langgraph/4_lab4.ipynb 

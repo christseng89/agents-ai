@@ -1,4 +1,4 @@
-# Week 4 - LangGraph
+# Week 4 - LangGraph Framework
 
 ## Week 4 Day 1
 ### **LangGraph - 🧠 本週概覽
@@ -597,3 +597,14 @@ If you're not comfortable, then remove the PythonREPL and online navigation tool
 cd 4_langgraph
 py app.py
 ```
+
+### **The Sidekick App**
+
+- ⚠️ **Caution:** use at your own risk!
+  If you're not comfortable, then remove the PythonREPL and online navigation tools
+
+- 🧱 It's a starting point that needs **continued** experiments and investigations
+
+- 📁 But so much **opportunity!**
+
+---

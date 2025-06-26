@@ -1,24 +1,33 @@
-# Dinner Report: Le Bernardin
+# 南京法式餐厅概况
 
-## Restaurant Overview
-- **Name**: Le Bernardin
-- **Address**: 155 W 51st St, New York, NY 10019
-- **Phone**: (212) 554-1515
-- **Website**: [le-bernardin.com](http://le-bernardin.com)
+## 名称: L'Arôme
 
-## Cuisine
-Le Bernardin specializes in refined seafood dishes, crafted with the utmost respect for the ingredients. The menu includes a variety of seafood preparations, with an emphasis on freshness and simplicity.
+### 地址:
+中国江苏省南京市建邺区银泰街888号 210000
 
-## Menu Highlights
-- **Tuna Tartare**: Diced raw tuna, served with toasted sesame and avocado.
-- **Wild Salmon**: Lightly cooked, served with a warm ginger-soy emulsion and bok choy.
-- **Poached Lobster**: Accompanied by truffle butter and a delicate sauce.
-- **Chocolate Soufflé**: A classic dessert, rich and airy.
+### 概述:
+L'Arôme 是一家位于南京的精致法式餐厅，提供现代法式料理，以优质的食材和精美的餐盘呈现而闻名。餐厅位于50楼，拥有迷人的城市景观，并且荣获2025年米其林指南推荐，成为享受高端法餐的理想场所。
 
-## Ambiance
-The atmosphere at Le Bernardin is elegant and serene, characterized by minimalist decor and a focus on the dining experience.
+### 菜单项:
+- 开胃菜:
+  - 法式洋葱汤
+  - 生蚝
+  - 蔬菜拼盘
 
-## Summary of Reviews
-Le Bernardin has consistently received rave reviews for its exceptional cuisine and impeccable service. It is a three-Michelin star restaurant, recognized as one of the best seafood restaurants not only in New York but also in the world. Diners emphasize the harmonious flavors and the artistry of the dishes, making it a top choice for special occasions.
+- 主菜:
+  - 烤鸭胸
+  - 牛排
+  - 香煎三文鱼
 
-**In conclusion**, Le Bernardin represents the pinnacle of fine dining, offering diners an unforgettable experience centered around seafood excellence.
+- 欢迎饮品:
+  - 法国红酒
+  - 香槟
+
+- 甜点:
+  - 法式焦糖布丁
+  - 提拉米苏
+  - 法式马卡龙
+
+### 联系方式:
+- 电话: +86 25 8471 8888
+- 网站: [L'Arôme 南京](http://example.com)

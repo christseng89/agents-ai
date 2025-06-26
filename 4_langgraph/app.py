@@ -54,17 +54,27 @@ atexit.register(free_resources)
 # --- Gradio UI 建構 ---
 with gr.Blocks(title="Sidekick", theme=gr.themes.Default(primary_hue="emerald")) as ui:
     gr.Markdown("## 🤖 Sidekick Personal Co-Worker")
-
-    sidekick = gr.State(delete_callback=lambda sk: None)  # Not needed since atexit is used
+    sidekick = gr.State(delete_callback=free_resources)  
 
     with gr.Row():
         chatbot = gr.Chatbot(label="Sidekick", height=300, type="messages")
 
     with gr.Group():
+        # 顯示問題提示
+        gr.Markdown("**❓ Message:**")
         with gr.Row():
-            message = gr.Textbox(show_label=False, placeholder="Your request to the Sidekick")
+            message = gr.Textbox(
+                show_label=False,
+                placeholder="Your message to the Sidekick"
+            )
+
+        # 顯示期望答案提示
+        gr.Markdown("**🎯 Success Criteria:**")
         with gr.Row():
-            success_criteria = gr.Textbox(show_label=False, placeholder="What are your success criteria?")
+            success_criteria = gr.Textbox(
+                show_label=False,
+                placeholder="What are your success criteria?"
+            )
 
     with gr.Row():
         reset_button = gr.Button("Reset", variant="stop")

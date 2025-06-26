@@ -187,3 +187,4 @@ my_crew/
 *_report.json
 *_companies.json
 memory/
+**/temp_code.js

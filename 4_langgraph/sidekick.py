@@ -9,13 +9,14 @@ from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from typing import List, Any, Optional, Dict
 from pydantic import BaseModel, Field
-from sidekick_tools import playwright_tools, other_tools
+from sidekick_tools import playwright_tools, more_tools
 import uuid
 import asyncio
 from datetime import datetime
 
 load_dotenv(override=True)
 
+# 🔶 **1** - Define the **`State`** class 
 class State(TypedDict):
     messages: Annotated[List[Any], add_messages]
     success_criteria: str
@@ -23,12 +24,10 @@ class State(TypedDict):
     success_criteria_met: bool
     user_input_needed: bool
 
-
 class EvaluatorOutput(BaseModel):
     feedback: str = Field(description="Feedback on the assistant's response")
     success_criteria_met: bool = Field(description="Whether the success criteria have been met")
     user_input_needed: bool = Field(description="True if more input is needed from the user, or clarifications, or the assistant is stuck")
-
 
 class Sidekick:
     def __init__(self):
@@ -44,11 +43,14 @@ class Sidekick:
 
     async def setup(self):
         self.tools, self.browser, self.playwright = await playwright_tools()
-        self.tools += await other_tools()
+        self.tools += await more_tools()
+
         worker_llm = ChatOpenAI(model="gpt-4o-mini")
         self.worker_llm_with_tools = worker_llm.bind_tools(self.tools)
+
         evaluator_llm = ChatOpenAI(model="gpt-4o-mini")
         self.evaluator_llm_with_output = evaluator_llm.with_structured_output(EvaluatorOutput)
+
         await self.build_graph()
 
     def worker(self, state: State) -> Dict[str, Any]:
@@ -97,23 +99,21 @@ class Sidekick:
 
 
     def worker_router(self, state: State) -> str:
-        last_message = state["messages"][-1]
-        
-        if hasattr(last_message, "tool_calls") and last_message.tool_calls:
-            return "tools"
-        else:
+        last = state["messages"][-1]
+        if state.get("success_criteria_met") or state.get("user_input_needed"):
             return "evaluator"
         
+        return "tools" if getattr(last, "tool_calls", None) else "evaluator"
+
     def format_conversation(self, messages: List[Any]) -> str:
-        conversation = "Conversation history:\n\n"
+        history = ["Conversation history:\n\n"]
         for message in messages:
             if isinstance(message, HumanMessage):
-                conversation += f"User: {message.content}\n"
+                history.append(f"User: {message.content}")
             elif isinstance(message, AIMessage):
-                text = message.content or "[Tools use]"
-                conversation += f"Assistant: {text}\n"
-        return conversation
-        
+                history.append(f"Assistant: {message.content or '[Tool Call]'}")
+        return "\n".join(history)
+
     def evaluator(self, state: State) -> State:
         last_response = state["messages"][-1].content
 
@@ -146,41 +146,40 @@ class Sidekick:
         evaluator_messages = [SystemMessage(content=system_message), HumanMessage(content=user_message)]
 
         eval_result = self.evaluator_llm_with_output.invoke(evaluator_messages)
-        new_state = {
+        return {
             "messages": [{"role": "assistant", "content": f"Evaluator Feedback on this answer: {eval_result.feedback}"}],
             "feedback_on_work": eval_result.feedback,
             "success_criteria_met": eval_result.success_criteria_met,
             "user_input_needed": eval_result.user_input_needed
         }
-        return new_state
 
-    def route_based_on_evaluation(self, state: State) -> str:
-        if state["success_criteria_met"] or state["user_input_needed"]:
-            return "END"
-        else:
-            return "worker"
-
-
+    def evaluator_router(self, state: State) -> str:
+        return "END" if state["success_criteria_met"] or state["user_input_needed"] else "worker"
+    
+    
     async def build_graph(self):
-        # Set up Graph Builder with State
+        # ⚪ **2** - Set up Graph Builder with State
         graph_builder = StateGraph(State)
 
-        # Add nodes
+        # 🟠 **3** - Create **`Nodes`**
         graph_builder.add_node("worker", self.worker)
         graph_builder.add_node("tools", ToolNode(tools=self.tools))
         graph_builder.add_node("evaluator", self.evaluator)
 
-        # Add edges
+        #🔵 **4** - Create **`Edges`**
         graph_builder.add_conditional_edges("worker", self.worker_router, {"tools": "tools", "evaluator": "evaluator"})
         graph_builder.add_edge("tools", "worker")
-        graph_builder.add_conditional_edges("evaluator", self.route_based_on_evaluation, {"worker": "worker", "END": END})
+        graph_builder.add_conditional_edges("evaluator", self.evaluator_router, {"worker": "worker", "END": END})
         graph_builder.add_edge(START, "worker")
 
-        # Compile the graph
+        #⚫ **5** - Compile the Graph
         self.graph = graph_builder.compile(checkpointer=self.memory)
 
     async def run_superstep(self, message, success_criteria, history):
-        config = {"configurable": {"thread_id": self.sidekick_id}}
+        config = {
+            "configurable": {"thread_id": self.sidekick_id},
+            "recursion_limit": 100  # 或設為你希望允許的最大輪數
+        }
 
         state = {
             "messages": message,
@@ -190,20 +189,26 @@ class Sidekick:
             "user_input_needed": False
         }
         result = await self.graph.ainvoke(state, config=config)
-        user = {"role": "user", "content": message}
-        reply = {"role": "assistant", "content": result["messages"][-2].content}
-        feedback = {"role": "assistant", "content": result["messages"][-1].content}
-        return history + [user, reply, feedback]
-    
-    def cleanup(self):
-        if self.browser:
-            try:
-                loop = asyncio.get_running_loop()
-                loop.create_task(self.browser.close())
-                if self.playwright:
-                    loop.create_task(self.playwright.stop())
-            except RuntimeError:
-                # If no loop is running, do a direct run
-                asyncio.run(self.browser.close())
-                if self.playwright:
-                    asyncio.run(self.playwright.stop())
+        return history + [
+            {"role": "user", "content": message},
+            {"role": "assistant", "content": result["messages"][-2].content},
+            {"role": "assistant", "content": result["messages"][-1].content},
+        ]
+
+    async def free_resources(self):
+        try:
+            if self.browser:
+                try:
+                    loop = asyncio.get_running_loop()
+                    loop.create_task(self.browser.close())
+                    if self.playwright:
+                        loop.create_task(self.playwright.stop())
+                except RuntimeError:
+                    # If no loop is running, do a direct run
+                    asyncio.run(self.browser.close())
+                    if self.playwright:
+                        asyncio.run(self.playwright.stop())
+                self.browser = None
+                self.playwright = None
+        except Exception as e:
+            print(f"⚠️ Error during Sidekick cleanup: {e}")

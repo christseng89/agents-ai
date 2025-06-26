@@ -568,3 +568,32 @@ http://localhost:8888/lab/tree/4_langgraph/3_lab3.ipynb
 
 #### Sidekick
 http://localhost:8888/lab/tree/4_langgraph/4_lab4.ipynb 
+
+## Week 4 Day 5 - Sidekick with more tools
+
+### Tools
+🕸️ Searching the web  
+📢 Sending notifications  
+📁 Using the file system  
+📚 Wikipedia  
+💻 Python REPL
+
+### 🧠 The Sidekick App
+
+⚠️ Caution: use at your own risk!  
+If you're not comfortable, then remove the PythonREPL and online navigation tools
+
+🧱 It's a starting point that needs continued experiments and investigations
+
+📂 But so much opportunity!
+
+---
+
+4_langgraph\sidekick_tools.py
+4_langgraph\sidekick.py
+4_langgraph\app.py
+
+```cmd
+cd 4_langgraph
+py app.py
+```

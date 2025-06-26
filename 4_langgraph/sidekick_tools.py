@@ -10,7 +10,8 @@ from langchain_experimental.tools import PythonREPLTool
 from langchain_community.utilities import GoogleSerperAPIWrapper
 from langchain_community.utilities.wikipedia import WikipediaAPIWrapper
 
-
+from langchain.tools import tool
+import subprocess
 
 load_dotenv(override=True)
 pushover_token = os.getenv("PUSHOVER_TOKEN")
@@ -25,7 +26,7 @@ async def playwright_tools():
     return toolkit.get_tools(), browser, playwright
 
 
-def push(text: str):
+def pushover(text: str):
     """Send a push notification to the user"""
     requests.post(pushover_url, data = {"token": pushover_token, "user": pushover_user, "message": text})
     return "success"
@@ -35,12 +36,22 @@ def get_file_tools():
     toolkit = FileManagementToolkit(root_dir="sandbox")
     return toolkit.get_tools()
 
+@tool
+def js_eval(code: str) -> str:
+    """Execute JavaScript code using Node.js and return the output"""
+    try:
+        with open("temp_code.js", "w", encoding="utf-8") as f:
+            f.write(code)
+        result = subprocess.run(["node", "temp_code.js"], capture_output=True, timeout=5, text=True)
+        return result.stdout.strip() if result.returncode == 0 else result.stderr.strip()
+    except Exception as e:
+        return f"JavaScript execution error: {e}"
 
-async def other_tools():
-    push_tool = Tool(name="send_push_notification", func=push, description="Use this tool when you want to send a push notification")
+async def more_tools():
+    pushover_tool = Tool(name="send_push_notification", func=pushover, description="Use this tool when you want to send a push notification")
     file_tools = get_file_tools()
 
-    tool_search =Tool(
+    serper_tool =Tool(
         name="search",
         func=serper.run,
         description="Use this tool when you want to get the results of an online web search"
@@ -51,5 +62,10 @@ async def other_tools():
 
     python_repl = PythonREPLTool()
     
-    return file_tools + [push_tool, tool_search, python_repl,  wiki_tool]
+    js_eval_tool = Tool(
+        name="javascript_executor",  # ✅ 合法名稱，符合 regex: ^[a-zA-Z0-9_-]+$
+        func=js_eval,
+        description="Execute JavaScript code snippets. Input should be valid JS expression or script."
+    )
 
+    return file_tools + [pushover_tool, serper_tool, js_eval_tool, python_repl,  wiki_tool ]

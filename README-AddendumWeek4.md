@@ -597,6 +597,8 @@ If you're not comfortable, then remove the PythonREPL and online navigation tool
 cd 4_langgraph
 py app.py
 ```
+- I'd like to go for dinner tomorrow to a French restaurant in ??. Please find a great French restaurant and write a report in markdown to dinner.md including the name, address, menu, reviews. Send me a push notification with the restaurant name and phone.
+- Please update the file to only contain information about ??? and include as much information as possible
 
 ### **The Sidekick App**
 

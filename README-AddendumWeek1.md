@@ -416,8 +416,8 @@ HUMAN → LLM Call → ENVIRONMENT <-> (Feedback)
 
 ---
 
-#### Guardrails
-### 🔒 什麼是 Guardrails？
+### Guardrails 
+#### 🔒 什麼是 Guardrails？
 
 在 Agentic AI 中，**Guardrails（防護欄）**是一種限制與保護機制，目的是讓 LLM 或代理人系統在**安全、可控的範圍內運作**，防止它們偏離預期行為。
 
@@ -425,7 +425,7 @@ HUMAN → LLM Call → ENVIRONMENT <-> (Feedback)
 
 ---
 
-## ✅ Guardrails 的功能：
+### ✅ Guardrails 的功能：
 
 1. ✅ **限制輸入/輸出內容格式**
 2. ✅ **限制工具/API 的使用範圍**
@@ -434,11 +434,11 @@ HUMAN → LLM Call → ENVIRONMENT <-> (Feedback)
 
 ---
 
-## 📌 實際範例說明
+#### 📌 實際範例說明
 
 ---
 
-### 🧠 範例 1：防止不當輸出
+#### 🧠 範例 1：防止不當輸出
 
 #### ❓任務：
 
@@ -459,7 +459,7 @@ HUMAN → LLM Call → ENVIRONMENT <-> (Feedback)
 
 ---
 
-### 🧠 範例 2：限制 API 使用次數
+#### 🧠 範例 2：限制 API 使用次數
 
 #### ❓任務：
 
@@ -479,7 +479,7 @@ HUMAN → LLM Call → ENVIRONMENT <-> (Feedback)
 
 ---
 
-### 🧠 範例 3：控制流程深度與成本
+#### 🧠 範例 3：控制流程深度與成本
 
 #### ❓任務：
 
@@ -498,7 +498,7 @@ HUMAN → LLM Call → ENVIRONMENT <-> (Feedback)
 
 ---
 
-### ✅ 工具與框架支援 Guardrails：
+#### ✅ 工具與框架支援 Guardrails：
 
 | 工具/框架                 | Guardrail 功能                                       |
 | --------------------- | -------------------------------------------------- |
@@ -509,7 +509,7 @@ HUMAN → LLM Call → ENVIRONMENT <-> (Feedback)
 
 ---
 
-## 🧾 小結
+### 🧾 小結
 
 | 對象     | Guardrail 效果      |
 | ------ | ----------------- |
@@ -549,7 +549,7 @@ A breakdown of the **differences between the "cast of characters"** listed in yo
 
 ---
 
-## 🧾 **Overview Table:**
+### 🧾 **Overview Table:**
 
 | Provider        | Model(s)             | Type                | Hosting                    | Notable Features                                         |
 | --------------- | -------------------- | ------------------- | -------------------------- | -------------------------------------------------------- |
@@ -562,7 +562,7 @@ A breakdown of the **differences between the "cast of characters"** listed in yo
 
 ---
 
-## 🔍 **Detailed Differences by Category**
+### 🔍 **Detailed Differences by Category**
 
 ### 🧠 **1. Intelligence & Reasoning Power**
 
@@ -588,7 +588,7 @@ A breakdown of the **differences between the "cast of characters"** listed in yo
 
 ---
 
-## ✅ **When to Use What**
+### ✅ **When to Use What**
 
 | Need                              | Recommendation          |
 | --------------------------------- | ----------------------- |
@@ -648,7 +648,7 @@ A breakdown of the **differences between the "cast of characters"** listed in yo
 
 ---
 
-## 📘 MCP 主要功能與特色
+### 📘 MCP 主要功能與特色
 
 ### 🧩 1. 統一介面（“USB‑C for AI”）
 
@@ -667,7 +667,7 @@ A breakdown of the **differences between the "cast of characters"** listed in yo
 
 ---
 
-## 🗣️ MCP 的使用場景
+### 🗣️ MCP 的使用場景
 
 * **桌面助手**：如 Claude Desktop 使用本地 MCP server 讀取文件、操作系統指令。
 * **企業應用**：如 Block、Replit、Sourcegraph 使用 MCP 連接內部資料庫和業務工具。
@@ -675,7 +675,7 @@ A breakdown of the **differences between the "cast of characters"** listed in yo
 
 ---
 
-## ✨ MCP 的優點
+### ✨ MCP 的優點
 
 * **可擴充性**：無需為每種工具重寫接口，只需透過 **MCP server 連接一次**。
 * **跨模型、跨平台通用**：支援多種 LLM 提供的 **Agent SDK**，例如 Claude、OpenAI Agents SDK 等。
@@ -683,7 +683,7 @@ A breakdown of the **differences between the "cast of characters"** listed in yo
 
 ---
 
-## ✅ 小結
+### ✅ 小結
 
 MCP 是一種統一、開源、安全且跨模組通用的介面協定，使得 **AI Agent** 能夠像使用 **USB‑C** 的方式，**一次性連接多種工具與資料源**，並執行雙向交互。已被多家領導者採用，推動了 **AI Agent 的生態建設**。
 
@@ -691,7 +691,7 @@ MCP 是一種統一、開源、安全且跨模組通用的介面協定，使得 
 
 ### A practical example of how **MCP** (Model Context Protocol) works in real-world use:
 
-## 🧩 Example: Adding a Postgres MCP Server with Claude CLI
+### 🧩 Example: Adding a Postgres MCP Server with Claude CLI
 
 Using the `claude` CLI, you can register an MCP server that lets Claude communicate with a PostgreSQL database:
 
@@ -716,7 +716,7 @@ This setup uses **MCP JSON‑RPC messages** under the hood to:
 
 ---
 
-## 🔧 Another Example: C# MCP Server Setup
+### 🔧 Another Example: C# MCP Server Setup
 
 With the **C# MCP SDK**, you can build a simple MCP server like this:
 
@@ -739,7 +739,7 @@ This spins up a server exposing **file system** and **Postgres** tools via MCP f
 
 ---
 
-## ⚙️ Workflow Summary
+### ⚙️ Workflow Summary
 
 1. **Server** defines available tools/resources (DB queries, file actions).
 2. **Client** (AI agent) discovers them via MCP metadata.
@@ -804,7 +804,7 @@ This spins up a server exposing **file system** and **Postgres** tools via MCP f
 
 ---
 
-## 💡 關鍵概念說明
+### 💡 關鍵概念說明
 
 1. **Shoving data into the prompt**
    指的是將相關的資料集或片段（如文章、產品資訊、數據庫內容）加入到 prompt 的 context 中，讓 LLM 回答時可以根據這些「在 situ」的資訊進行推理。
@@ -825,7 +825,7 @@ This spins up a server exposing **file system** and **Postgres** tools via MCP f
 
 ---
 
-## 🧾 小結
+### 🧾 小結
 
 * **"Shoving data into prompt"** 是 RAG 的核心思路：先檢索資料，再塞入 prompt 中
 * **RAG pipeline** 三步驟：**向量化 → 檢索 → 補 prompt → 生成** 
@@ -845,7 +845,7 @@ This spins up a server exposing **file system** and **Postgres** tools via MCP f
 
 ---
 
-## ✅ 示例：LLM 結合 Tools 的實際場景
+### ✅ 示例：LLM 結合 Tools 的實際場景
 
 ### 🔧 範例 1：自然語言查資料（Text-to-SQL Agent）
 
@@ -875,14 +875,14 @@ This spins up a server exposing **file system** and **Postgres** tools via MCP f
 
 ---
 
-## ⚠️ 工具使用的風險 & 防護措施
+### ⚠️ 工具使用的風險 & 防護措施
 
 * 🧠 **潛在濫用**：具備大規模 API 呼叫資源可造成資安風險或資料洩漏 
 * 🛡️ **防護對策**：需要設定 guardrails（如 API 呼叫限制、權限控管、輸入驗證）來保障安全。
 
 ---
 
-## 🧩 小結
+### 🧩 小結
 
 “Tools” 給 LLM 帶來了真正的 **行動能力**，讓它們可以自行：
 
@@ -924,7 +924,7 @@ Prompt LLM again (with resources + tool result)
    LLM generates final response
 ```
 
-## 🧠 流程說明
+### 🧠 流程說明
 
 1. **Prompt + Resources**
 
@@ -952,7 +952,7 @@ Prompt LLM again (with resources + tool result)
 
 ---
 
-## 🗝️ 核心概念整合
+### 🗝️ 核心概念整合
 
 * **Resources**：透過如 RAG 技術，智能選取最相關資料並塞入 prompt，讓模型更專業 。
 * **Tool Calling**：LLM 可自主決定是否呼叫工具，並以結構化 JSON 格式發出呼叫，再由後端執行。
@@ -960,7 +960,7 @@ Prompt LLM again (with resources + tool result)
 
 ---
 
-## ✅ 優勢一覽
+### ✅ 優勢一覽
 
 | 功能     | 好處                              |
 | ------ | ------------------------------- |

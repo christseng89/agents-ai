@@ -1,6 +1,7 @@
 # Week 5 - Microsoft AutoGen Framework
 
-## **AutoGen** `AG` 
+## Week 5 Day 1
+### **AutoGen** `AG` 
 
 <span style="color:gold">AutoGen 0.4 released January 2025</span>
 
@@ -37,10 +38,6 @@
 
 ---
 
-### 根據你提供的圖片，以下是 **Microsoft AutoGen 的核心概念（Core Concepts）**，包含對應的圖示與顏色：
-
----
-
 ### **AG Core Concepts**
 
 * 🧠 **Models** `🟡`
@@ -69,3 +66,20 @@ py testAutoGen2.py
 
 ```
 http://localhost:8888/lab/tree/5_autogen/1_lab1_autogen_agentchat.ipynb
+
+## Week 5 Day 2
+
+### 🅰️🌀  **Going Deeper**
+
+🕶️  **Multi-modal**              
+
+🟧 **Structured Outputs**
+
+🔧  **Tools from LangChain**     
+
+👥 **Teams**
+
+❓  **And special guest** (MCP Server)
+```
+
+---

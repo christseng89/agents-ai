@@ -1,19 +1,22 @@
-# Flights Information
+# Flights from Nanjing to Taipei - July 2025
 
-1. **Airline**: China Airlines
-   - **Flight Number**: CI 151
-   - **Departure**: Nanjing Lukou International Airport (NKG)
-   - **Arrival**: Taiwan Taoyuan International Airport (TPE)
-   - **Date**: July 7, 2025
-   - **Time**: 12:10 PM (NKG) - 2:30 PM (TPE)
-   - **Duration**: 2 hours 20 minutes
-   - **Price**: $109
+## 1. China Eastern Airlines
+- **Departure:** Nanjing (NKG)
+- **Arrival:** Taipei (TPE)
+- **Duration:** Approximately 2.1 hours
+- **Price:** $329
+- **Frequency:** 7 flights per week
 
-2. **Airline**: China Eastern Airlines
-   - **Flight Number**: MU 1601
-   - **Departure**: Nanjing Lukou International Airport (NKG)
-   - **Arrival**: Taipei's Taoyuan International Airport (TPE)
-   - **Date**: July 7, 2025
-   - **Time**: 1:00 PM (NKG) - 3:20 PM (TPE)
-   - **Duration**: 2 hours 20 minutes
-   - **Price**: $116
+## 2. Cathay Pacific
+- **Departure:** Nanjing (NKG)
+- **Arrival:** Taipei (TPE)
+- **Duration:** Approximately 2.1 hours
+- **Price:** $225
+- **Frequency:** Limited availability
+
+## 3. XiamenAir
+- **Departure:** Nanjing (NKG)
+- **Arrival:** Taipei (TPE)
+- **Duration:** Approximately 2.1 hours
+- **Price:** $283
+- **Frequency:** Limited availability

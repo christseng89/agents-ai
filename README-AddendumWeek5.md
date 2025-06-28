@@ -216,17 +216,43 @@ Both are powerful and **can be combined**:
 
 ---
 
-**TL;DR**
-
 * SK = code-centric orchestration for **LLM apps**.
 * AutoGen = conversation-centric orchestration for **multi-agent systems**.
 
 ### 🪄 **What is AutoGen Core?**
 
-🟨 An Agent **interaction** framework
-🟧 Agnostic to Agent **abstraction**
-🔵 Somewhat similar positioning to **LangGraph**
+- 🟨 An Agent **interaction** framework
+  -  一個代理(Agent)互動框架 主要關注於如何讓不同的 AI 代理之間進行互動和溝通。
+- 🟧 Agnostic to Agent **abstraction**
+  - 不限制或規定代理應該如何被實現或定義。它對於代理的具體實現方式保持開放和靈活。
+- 🔵 Somewhat similar positioning to **LangGraph**
+  - 在某些方面可能與 LangGraph（另一個 AI 相關的工具或框架）有相似的功能或目標。
 
 _But focus is on **managing interactions** between **distributed** and **diverse** Agents_
 
+- AutoGen Core 是一個專注於 AI 代理之間互動的框架，它在設計上保持了靈活性，允許使用者根據自己的需求來定義和實現代理。 
+- Using different programming paradigms, developers can create agents that best fit their specific use cases.
+
 ---
+
+### 舉例說明 AutoGen Core 的特點:
+
+1. 代理互動框架:
+   假設您想創建一個自動化客戶服務系統。您可以使用 AutoGen Core 來設置**多個AI代理:**
+   - 一個**接待員代理**來接收初始查詢
+   - 一個專門處理**賬單問題代理**
+   - 一個處理**技術支持代理**
+   - 一個**管理員代理**來協調其他代理
+
+   AutoGen Core 會幫助這些代理之間順暢地交互,例如接待員可以將賬單問題轉給**賬單代理**,或將技術問題轉給**技術支持代理**。
+
+2. 對代理抽象化保持中立:
+   - 您可以使用不同的AI模型來實現每個代理。例如,接待員可能使用GPT-3,賬單代理可能使用一個專門訓練的財務模型,技術支持代理可能結合使用一個**知識庫**和**BERT**模型。
+   - AutoGen Core 不會限制您如何實現這些代理,它只關注於如何讓它們互相溝通。
+
+3. 與 LangGraph 相似:
+   就像 LangGraph 允許您創建語言處理流程一樣,AutoGen Core 允許您創建代理互動流程。例如:
+   - 在 LangGraph 中,您可能創建一個流程來分析文本、提取關鍵詞、然後生成摘要。
+   - 在 AutoGen Core 中,您可能創建一個流程,讓接待員代理接收查詢、**決定合適**的專門代理、將查詢轉發給該代理、然後將回答返回給用戶。
+
+**AutoGen Core** 作為一個**靈活**的框架,幫助開發者創建**複雜的、多代理**的AI系統,而**不受限**於特定的**AI實現**方式。

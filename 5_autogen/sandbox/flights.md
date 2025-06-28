@@ -1,22 +1,17 @@
-# Flights from Nanjing to Taipei - July 2025
+# Flight Deals from Nanjing to Taipei - July 2025
 
-## 1. China Eastern Airlines
-- **Departure:** Nanjing (NKG)
-- **Arrival:** Taipei (TPE)
-- **Duration:** Approximately 2.1 hours
-- **Price:** $329
-- **Frequency:** 7 flights per week
+## Overview
+- **Route:** Nanjing (NKG) to Taipei (TPE)
+- **Duration:** Approximately 2 hours 10 minutes
 
-## 2. Cathay Pacific
-- **Departure:** Nanjing (NKG)
-- **Arrival:** Taipei (TPE)
-- **Duration:** Approximately 2.1 hours
-- **Price:** $225
-- **Frequency:** Limited availability
+## Pricing Information
+- Prices start from: HK$795 for one-way flights.
+- Recent pricing indicated about: US$228 for one-way flights on specific dates.
 
-## 3. XiamenAir
-- **Departure:** Nanjing (NKG)
-- **Arrival:** Taipei (TPE)
-- **Duration:** Approximately 2.1 hours
-- **Price:** $283
-- **Frequency:** Limited availability
+## Airlines to Consider
+- China Airlines
+- Other major airlines mentioned include those available through various booking platforms.
+
+## Booking Tips
+- Flexibility in dates may secure better rates.
+- Check major travel websites for comparisons across booking agents.

@@ -282,3 +282,7 @@ _Goal: give you a flavor to see if this is relevant for you and worth further R&
 ---
 
 http://localhost:8888/lab/tree/5_autogen/3_lab3_autogen_core.ipynb
+
+```
+py 3_lab3_autogen_core.py
+```

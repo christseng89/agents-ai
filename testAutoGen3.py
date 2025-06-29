@@ -2,23 +2,26 @@
 import builtins
 builtins.input = lambda prompt='': "Automated response"
 
-
-from autogen_agentchat.conditions import TextMentionTermination
-from autogen_agentchat.ui import Console
-from autogen_ext.agents.web_surfer import MultimodalWebSurfer
-
-from autogen_agentchat.agents import AssistantAgent
-from autogen_core import CancellationToken
-from autogen_agentchat.messages import TextMessage
-
 import asyncio
 import os
+from autogen_agentchat.agents import AssistantAgent
+from autogen_agentchat.conditions import TextMentionTermination
 from autogen_agentchat.agents import UserProxyAgent
 from autogen_agentchat.teams import RoundRobinGroupChat
-from autogen_core import CancellationToken
 from autogen_ext.models.openai import _model_info
 from dotenv import load_dotenv
 from autogen_ext.models.openai import OpenAIChatCompletionClient
+
+# from dataclasses import dataclass
+
+# AG Core ...
+# from autogen_core import AgentId, MessageContext, RoutedAgent, message_handler
+# from autogen_core import SingleThreadedAgentRuntime
+# from autogen_core import CancellationToken
+
+# from autogen_agentchat.messages import TextMessage
+# from autogen_agentchat.ui import Console
+# from autogen_ext.agents.web_surfer import MultimodalWebSurfer
 
 load_dotenv()
 
@@ -28,10 +31,14 @@ async def main():
     print("PROMPT_MODE =", os.getenv('PROMPT_MODE', 'not set'))
     print("input() patched to always return 'Automated response'")
 
-    # Create model info with structured_output enabled
+    # Model Configuration (Anthropic Claude)
+    anthropic_api_key = os.getenv("ANTHROPIC_API_KEY")
+    if not anthropic_api_key:
+        raise ValueError("ANTHROPIC_API_KEY not found in environment variables.")
+
     model_info = _model_info.ModelInfo(
         endpoint="https://api.anthropic.com/v1/claude",
-        api_key=os.getenv("ANTHROPIC_API_KEY"),
+        api_key=anthropic_api_key,
         family="claude",
         vision=None,
         function_calling="auto",
@@ -39,47 +46,78 @@ async def main():
         structured_output=True
     )
 
-    # Initialize model client
-    
+    # Initialize Model Client
     model_client = OpenAIChatCompletionClient(
         model="claude-3-7-sonnet-20250219",
         model_info=model_info,
         timeout=60.0
     )
 
-    # Create user proxy and team
-    user_proxy = UserProxyAgent("User")
-    team = RoundRobinGroupChat([user_proxy])
+    # Create Agents
+    receptionist_agent = AssistantAgent(
+        name="Receptionist",
+        system_message="You are a friendly and helpful receptionist. Greet the user and determine if they need help with billing, technical support, or general inquiries.  Then, direct the user to the appropriate agent. Be concise.",
+        model_client=model_client
+    )
 
-    # List of user messages
+    billing_agent = AssistantAgent(
+        name="BillingAgent",
+        system_message="You are a billing specialist. Help users with billing questions and issues. Be friendly and professional.",
+        model_client=model_client
+    )
+
+    tech_support_agent = AssistantAgent(
+        name="TechSupportAgent",
+        system_message="You are a technical support specialist. Assist users with technical issues and provide solutions. Be clear and helpful.",
+        model_client=model_client
+    )
+
+    admin_agent = AssistantAgent(
+        name="AdminAgent",
+        system_message="You are an administrator. Handle general inquiries and requests that do not fall under billing or tech support. Be informative and efficient.",
+        model_client=model_client
+    )
+
+    # User Proxy Agent
+    user_proxy = UserProxyAgent("user_proxy")  
+    # termination = TextMentionTermination("exit", sources=["user_proxy"])
+    text_termination = TextMentionTermination("APPROVE")
+
+    # Web surfer and user proxy take turns in a round-robin fashion.
+    team = RoundRobinGroupChat(
+        [receptionist_agent, billing_agent, tech_support_agent, admin_agent, user_proxy], 
+        termination_condition=text_termination,
+        max_turns=3
+    )
+
+    # Example User Messages
     user_messages = [
         "Hello, I need help with my bill.",
-        "Yes, my latest bill seems incorrect.",
-        "Can you explain the charges?"
+        "I am having technical difficulties accessing my account.",
+        "I have a general question about your company charges policies.",
+        "I need to understand a charge on my bill",
+        "My internet is not working",
+        "I want to change my password",
+        "Exit"  # This will trigger the termination condition
     ]
 
-    message = (
-        "You are a helpful customer service agent. "
-        "Respond to the user's queries about their bill in a friendly and professional manner."
-    )
-    
-    # Run conversation with timeout to prevent hang
-    for msg in user_messages:
-        print(f"\nUser: {msg}")
-        try:
-            # Wrap in asyncio.wait_for for quick timeout if stuck
-            response = await asyncio.wait_for(
-                team.run(task=msg, cancellation_token=CancellationToken()), 
-                timeout=10  # seconds
-            )
-            for m in response.messages:
-                print(f"{m.source}: {m.content}")
-        except asyncio.TimeoutError:
-            print("Response timed out: possible prompt or hang.")
+    try:
+        for msg in user_messages:
+            print(f"\n\t👤 User: {msg}")
+            # Create a TextMessage from the user input
+            message = msg
+            # Process the message through the team
+            response = await team.run(task=message)
+            print(f"\n🤖 Response from team:")
+            if hasattr(response, 'messages'):
+                for m in response.messages:
+                    print(f"  📣 Source: {m.source}")
+                    print(f"  💬 Content: {m.content}")
+            else:
+                print("  No messages in response.")
 
-    # Close client
-    await model_client.close()
+    finally:
+        await model_client.close()
 
 if __name__ == "__main__":
     asyncio.run(main())
-

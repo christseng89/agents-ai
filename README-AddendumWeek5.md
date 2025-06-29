@@ -256,3 +256,29 @@ _But focus is on **managing interactions** between **distributed** and **diverse
    - 在 AutoGen Core 中,您可能創建一個流程,讓接待員代理接收查詢、**決定合適**的專門代理、將查詢轉發給該代理、然後將回答返回給用戶。
 
 **AutoGen Core** 作為一個**靈活**的框架,幫助開發者創建**複雜的、多代理**的AI系統,而**不受限**於特定的**AI實現**方式。
+
+```cmd
+py testAutoGen3.py
+```
+---
+
+### AG Fundamental principle
+
+- It decouples an Agent's **logic** from how **messages are delivered**.
+- The framework manages **creation** and **communication**.
+- Agents are responsible for their **logic**, which is distinct from the Autogen Core.
+
+---
+
+### Two Types of Runtime
+
+- Standalone (Day 3)
+- Distributed (Day 4)
+
+But only high level
+
+_Goal: give you a flavor to see if this is relevant for you and worth further R&D_
+
+---
+
+http://localhost:8888/lab/tree/5_autogen/3_lab3_autogen_core.ipynb

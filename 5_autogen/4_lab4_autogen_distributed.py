@@ -115,10 +115,13 @@ async def main():
         await worker1.stop()
         await worker2.stop()
 
-if __name__ == "__main__":
+async def main_wrapper():
     host = GrpcWorkerAgentRuntimeHost(address="localhost:50051")
-    host.start() 
-    
-    # Run the main function in the event loop
-    asyncio.run(main())
-    host.stop()
+    await host.start()
+    try:
+        await main()
+    finally:
+        await host.stop()
+
+if __name__ == "__main__":
+    asyncio.run(main_wrapper())

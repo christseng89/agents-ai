@@ -1,16 +1,16 @@
 from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntimeHost
-from agent import Agent
+# from agent import Agent
 from creator import Creator
 from autogen_ext.runtimes.grpc import GrpcWorkerAgentRuntime
 from autogen_core import AgentId
-import refines as refines
+import messages
 import asyncio
 
 HOW_MANY_AGENTS = 12
 
 async def create_and_message(worker, creator_id, i: int):
     try:
-        result = await worker.send_message(refines.Message(content=f"agent_{i:02d}.py"), creator_id)
+        result = await worker.send_message(messages.Message(content=f"agent_{i:02d}.py"), creator_id)
         with open(f"idea_{i:02d}.md", "w") as f:
             f.write(result.content)
     except Exception as e:

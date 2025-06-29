@@ -2,7 +2,7 @@ from autogen_core import MessageContext, RoutedAgent, message_handler
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
 from autogen_ext.models.openai import OpenAIChatCompletionClient
-import refines as refines
+import messages
 from autogen_core import TRACE_LOGGER_NAME
 import importlib
 import logging
@@ -47,7 +47,7 @@ class Creator(RoutedAgent):
         
 
     @message_handler
-    async def message_handler(self, message: refines.Message, ctx: MessageContext) -> refines.Message:
+    async def message_handler(self, message: messages.Message, ctx: MessageContext) -> messages.Message:
         filename = message.content
         agent_name = filename.split(".")[0] 
 
@@ -59,5 +59,5 @@ class Creator(RoutedAgent):
         module = importlib.import_module(agent_name)
         await module.Agent.register(self.runtime, agent_name, lambda: module.Agent(agent_name))
         print(f"** Agent {agent_name} is registered")
-        result = await self.send_message(refines.Message(content="Give me an idea"), AgentId(agent_name, "default"))
-        return refines.Message(content=result.content)
+        result = await self.send_message(messages.Message(content="Give me an idea"), AgentId(agent_name, "default"))
+        return messages.Message(content=result.content)

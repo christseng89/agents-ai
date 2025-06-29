@@ -2,7 +2,8 @@ from autogen_core import MessageContext, RoutedAgent, message_handler
 from autogen_agentchat.agents import AssistantAgent
 from autogen_agentchat.messages import TextMessage
 from autogen_ext.models.openai import OpenAIChatCompletionClient
-import refines as refines
+import refines 
+import messages
 import random
 
 
@@ -30,7 +31,7 @@ class Agent(RoutedAgent):
         self._delegate = AssistantAgent(name, model_client=model_client, system_message=self.system_message)
 
     @message_handler
-    async def handle_message(self, message: refines.Message, ctx: MessageContext) -> refines.Message:
+    async def handle_message(self, message: messages.Message, ctx: MessageContext) -> messages.Message:
         # print(f"{self.id.type}: Received message")
         text_message = TextMessage(content=message.content, source="user")
         response = await self._delegate.on_messages([text_message], ctx.cancellation_token)
@@ -38,7 +39,7 @@ class Agent(RoutedAgent):
         if random.random() < self.CHANCES_THAT_I_BOUNCE_IDEA_OFF_ANOTHER:
             recipient = refines.find_recipient()
             message = f"Here is my business idea. It may not be your specialty, but please refine it and make it better. {idea}"
-            response = await self.send_message(refines.Message(content=message), recipient)
+            response = await self.send_message(messages.Message(content=message), recipient)
             idea = response.content
-        return refines.Message(content=idea)
+        return messages.Message(content=idea)
     

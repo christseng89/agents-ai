@@ -334,3 +334,85 @@ http://localhost:8888/lab/tree/5_autogen/4_lab4_autogen_distributed.ipynb
 ```cmd
 py 4_lab4_autogen_distributed.py
 ```
+
+## Week 5 Day 5
+### 🅰️🌀  **Big AutoGen Project**
+
+🟨 🎓 **Educational**
+
+🟨 🎭 **Entertaining**
+
+🟨 😎 **Edgy**
+
+_**NOTES:**_
+
+🟧 🌴 **Uncommercial (but a twist)**
+
+🟧 🎲 **Unreliable**
+
+🟧 ☢️ **Unsafe**
+
+---
+
+### The idea
+
+* Explore the **dynamic** nature of AutoGen
+
+* Make a **"Creator"** agent that can write a python module
+
+* The python module is… an **Agent**: 
+  _An AutoGen AgentChat Agent in AutoGen Core_
+
+* Then have the Creator agent actually register its creation with a **distributed** runtime
+
+* Have it make creations that can message each other by their names
+
+* Make them **collaborate** to come up with a **commercial business idea** for Agents
+
+
+這個專案的**核心想法**：
+
+✅ **探索 AutoGen 的動態特性**
+
+* 發揮 AutoGen 框架的靈活性，做些之前沒嘗試過的事情，主要是為了教育用途。
+* 同時也是一個具娛樂性、甚至有點「前衛」的專案，符合目前關於 AI 自主代理（Agent）的熱門話題。
+
+✅ **打造「創作者代理（Creator Agent）」**
+
+* 這個創作者代理能「寫出 Python 模組」。
+* 這個 Python 模組本身也是一個代理（Agent）：即在 AutoGen Core 裡運行的 AgentChat Agent。
+* 換句話說，我們將建立一個「會寫出其他代理的代理」。
+
+✅ **讓創作者代理完成全流程**
+
+* 不只是產生程式碼，而是能將產生的代理註冊到 AutoGen Core 的分散式執行環境裡。
+* 由 Creator Agent 所產生的代理，可以互相以名稱進行訊息溝通和互動。
+
+✅ **目標：構思商業點子**
+
+* 這些彼此溝通的代理，最終目標是「合作想出 AI 代理相關的商業構想」。
+* 雖然整個專案偏教育性質，但還是有潛在的商業價值。
+
+✅ **風險與挑戰**
+
+* 這專案不是特別偏商業導向，有一定「非商業」色彩。
+* 實作過程不保證穩定，有可能失敗。
+* 涉及自動產生並執行 Python 程式碼，存在安全風險，需要使用者自行承擔執行風險。
+
+✅ **技術重點**
+
+* 專案會大量使用 Python 的 **asyncio** 非同步程式設計，避免代理一個個串行執行導致流程過慢。
+
+---
+
+簡言之：
+
+> 這個專案的精髓是讓一個「創造者代理」動態產生新的代理，並將它們註冊到系統中，讓這些代理彼此溝通、合作，最終想出 AI 代理的商業應用點子。雖然具實驗性和風險，但非常具有教育意義與探索性。
+
+---
+
+```cmd
+cd 5_autogen
+py world.py
+
+```

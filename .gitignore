@@ -189,3 +189,5 @@ my_crew/
 memory/
 **/temp_code.js
 sandbox/
+5_autogen/**/agent_*.py
+5_autogen/**/idea_*.md

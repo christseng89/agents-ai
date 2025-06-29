@@ -286,3 +286,51 @@ http://localhost:8888/lab/tree/5_autogen/3_lab3_autogen_core.ipynb
 ```
 py 3_lab3_autogen_core.py
 ```
+
+## Week 5 Day 4
+
+### AG Two Types of Runtime:
+
+**Standalone** 
+_**Distributed**_
+
+- "Standalone yesterday, distributed today"
+- "Even higher level"
+- Goal: _give you a flavor to see if this is relevant for you and worth further **R&D**_
+
+---
+
+### “Distributed Runtime”（分布式运行时）的定义。主要内容包括：
+
+- 一个**分布式代理（distributed agent）**负责生命周期管理和跨流程边界的通信。
+  - **Host service**（宿主服务）：连接到worker runtimes，处理消息传递和会话管理。
+  - **Worker runtime**（工作运行时）：向宿主服务广告代理（agents），并负责执行它们的代码。
+
+---
+
+### 关于分布式运行时（Distributed Runtime）的总结如下：
+
+**分布式运行时**是AutoGen核心架构中的一个**更高级别**的概念，设计用于处理跨进程（甚至可能**跨不同平台和语言**）之间的消息传递和业务协调。它不像单线程版本那样局限于一台机器，而是可以在多个进程甚至多台设备上运行，增强了系统的扩展性和灵活性。
+
+**分布式运行时**主要由两个部分组成：
+- **Host Service（宿主服务）**：类似于一个容器，管理多个**Worker Runtime**。它负责消息的传输、会话管理和远程过程调用（例如**gRPC**），处理消息在不同计算节点间远距离传递的细节。
+- **Worker Runtime（工作运行时）**：在每个节点上运行，管理实际的**代理（Agents）**，并与**宿主服务通信**。它维护自己的注册代理信息，并负责代理代码的执行。
+
+目前，这一技术仍处于**实验阶段**，API可能会变动，还**不能直接用于生产环境**。但它代表了未来复杂分布式智能系统的架构方向，提供了在不同平台、多进程环境中实现代理协作的可能性。
+
+多个Worker Runtime可以同时工作。这也是分布式架构的核心优势之一：
+
+- **并行处理**：多个Worker Runtime可以并行处理不同的任务或在不同的机器上运行，极大提高系统的吞吐量和效率。
+- **扩展性强**：随着需求增加，可以增加更多的Worker Runtime来应对更大量的任务，无需更改核心架构。
+- **高可用性**：其中某个Worker Runtime出现故障，其他的仍在运行，可以保证系统的持续工作。
+- **协作操作**：多个Worker Runtime通过宿主服务协调，进行任务分配、消息传递，实现整个平台的整体工作。
+
+_总结：**多个Worker Runtime可以同时运行并协作**，这是分布式系统提升性能和弹性的关键。_
+
+---
+
+http://localhost:8888/lab/tree/5_autogen/4_lab4_autogen_distributed.ipynb
+
+```cmd
+py 4_lab4_autogen_distributed.py
+```

@@ -51,7 +51,7 @@ async def main():
 
     async with MCPServerStdio(params=files_params, client_session_timeout_seconds=30) as mcp_server_files:
         async with MCPServerStdio(params=playwright_params, client_session_timeout_seconds=30) as mcp_server_browser:
-            print ("\nStarting Agent...")
+            print ("\nStarting Investigator Agent...")
             agent = Agent(
                 name="investigator", 
                 instructions=instructions, 

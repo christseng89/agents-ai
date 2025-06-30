@@ -177,3 +177,22 @@
 * MCP servers can wrap external APIs as “tools.”
 
 ---
+
+http://127.0.0.1:8888/lab/tree/6_mcp/1_lab1.ipynb
+
+**Note:**
+- Create `sandbox` subfolder in folder `6_mcp`.
+
+```cmd
+cd 6_mcp
+python3 1_lab1.py
+```
+
+### MCP Marketplace
+
+- https://huggingface.co/blog/LLMhacker/top-11-essential-mcp-libraries **Top 11**
+- https://mcp.so/ **Top #1**
+- https://smithery.ai/ **Test MCP Server** 
+- https://huggingface.co/blog/Kseniase/mcp **An interesting topics**
+
+**Security** is a concern to use **MCP Servers**, so be careful with MCP servers you run.  Get the big companies' MCP servers, like OpenAI, Microsoft, etc.

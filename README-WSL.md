@@ -70,3 +70,13 @@ uv run jupyter lab
 ```cmd
 code .
 ```
+
+### Install Chromium
+```cmd
+sudo apt update
+sudo apt install chromium-browser -y
+chromium-browser --version
+    Chromium 138.0.7204.49 snap
+chromium-browser
+
+```

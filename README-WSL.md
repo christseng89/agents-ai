@@ -53,3 +53,9 @@ git add .
 git commit -m "Your commit message"
 git push     
 ```
+
+### Activate Virtual Environment
+
+```
+source .venv/bin/activate
+```

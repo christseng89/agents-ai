@@ -59,3 +59,14 @@ git push
 ```
 source .venv/bin/activate
 ```
+
+### Start up Jupyter Lab
+```cmd
+cd projects/agents-ai
+uv run jupyter lab
+```
+
+### Start VSC (WSL)
+```cmd
+code .
+```

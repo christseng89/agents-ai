@@ -1,5 +1,5 @@
 # Week 6 - MCP
-- MCP only works in WSL
+- MCP only works in **WSL**
 
 ## Week 6 Day 1
 ### “如果你刚加入我们...” 

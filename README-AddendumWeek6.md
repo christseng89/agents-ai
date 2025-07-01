@@ -196,3 +196,102 @@ python3 1_lab1.py
 - https://huggingface.co/blog/Kseniase/mcp **An interesting topics**
 
 **Security** is a concern to use **MCP Servers**, so be careful with MCP servers you run.  Get the big companies' MCP servers, like OpenAI, Microsoft, etc.
+
+## Week 6 Day 2 - building an owned MCP Server
+
+### ✅ MCP Core Concepts
+
+#### **The 3 Components:**
+
+* 🟦 **Host**
+  is an LLM app like Claude or our Agent architecture
+
+* 🟨 **MCP Client**
+  lives inside Host and connects 1:1 to MCP Server
+
+* 🟧 **MCP Server**
+  provides tools, context and prompts
+
+#### **Example:**
+
+* **Fetcher** is an 🟧 **MCP Server** that searches the web via a headless browser.
+
+* You can configure 🟦 **Claude Desktop** (the host) to run an 🟨 **MCP Client** that then launches the **Fetcher MCP Server** on your computer.
+
+> We did that last week with AutoGen.
+
+---
+
+Fantastic! Let’s convert the slide’s text **and** diagram contents into structured text, preserving colors and symbols for clarity.
+
+---
+
+#### ✅ MCP Architecture Overview
+
+🚀 **Usage Scenarios**
+
+* **Local Only (File Writer)**
+
+  * MCP Client ↔ **STDIO** ↔ MCP Server on your machine.
+
+* **Local Server → Remote API**
+
+  * MCP Client ↔ **STDIO** ↔ MCP Server ↔ **Remote** API calls.
+
+* **Fully Remote (Managed/Hosted)**
+
+  * MCP Client ↔ **SSE** ↔ **Remote** MCP Server **(rare)**.
+
+---
+
+### **⚙️ Making an MCP Server**
+
+#### **🟧 Why make an MCP Server**
+
+- 🟠 Allow **others** to incorporate tools and resources
+- 🟠 **Consistently** incorporate all our MCP Servers
+- 🟠 Understand the **plumbing**
+
+---
+
+#### **🟨 Reasons not to make an MCP Server**
+
+- 🟡 *If it’s an **internal use** only, then we could just make tools —*the `@function_tool` decorator can make any function into a tool*
+
+### **🟨 But...When using MCP Server**
+
+✅ Even internal users should often **call an external MCP server** because:
+
+* isolates sensitive data logic
+* centralizes **authentication** and **authorization**
+* enables **logging** and **audit trails**
+* enforces **Zero Trust** principles
+* future-proofs **external integrations**
+
+
+> _“Even for **internal users**, using an **external** MCP server is safer.”_
+
+---
+
+http://127.0.0.1:8888/lab/tree/6_mcp/2_lab2.ipynb
+
+```cmd
+cd 6_mcp
+python3 accounts.py
+python3 2_lab2.py
+python3 app.py
+```
+
+#### Special Note
+**accounts.py** was written by CrewAI in Week 4 with a new **database.py** using Sqlite database.
+
+#### Exercise
+
+```
+cd 6_mcp\exercise_date
+python3 openai_date_tool.py
+  LLM calls function: 'get_today_date'
+  [07/01/25 18:31:52] INFO     Processing request of type CallToolRequest                                    server.py:556
+  Today's date is July 1, 2025.
+
+```

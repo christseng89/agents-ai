@@ -4,12 +4,35 @@ from dotenv import load_dotenv
 from datetime import datetime
 from market import get_share_price
 from database import write_account, read_account, write_log
+from tabulate import tabulate
+import random
 
 load_dotenv(override=True)
 
 INITIAL_BALANCE = 10_000.0
 SPREAD = 0.002
 
+def print_transactions(trades):
+    """
+    Print a list of trade dictionaries in a professional tabular format.
+    """
+    if not trades:
+        print("No trades to display.")
+        return
+
+    # Prepare rows for tabulate
+    rows = []
+    for trade in trades:
+        rows.append([
+            trade["timestamp"],
+            trade["symbol"],
+            trade["quantity"],
+            f"${trade['price']:.2f}",
+            trade["rationale"]
+        ])
+
+    headers = ["Timestamp", "Symbol", "Quantity", "Price", "Rationale"]
+    print(tabulate(rows, headers=headers, tablefmt="grid"))
 
 class Transaction(BaseModel):
     symbol: str
@@ -65,7 +88,7 @@ class Account(BaseModel):
         if amount <= 0:
             raise ValueError("Deposit amount must be positive.")
         self.balance += amount
-        print(f"Deposited ${amount}. New balance: ${self.balance}")
+        print(f"Deposited ${amount:.2f}. New balance: ${self.balance:.2f}")
         self.save()
 
     def withdraw(self, amount: float):
@@ -73,7 +96,7 @@ class Account(BaseModel):
         if amount > self.balance:
             raise ValueError("Insufficient funds for withdrawal.")
         self.balance -= amount
-        print(f"Withdrew ${amount}. New balance: ${self.balance}")
+        print(f"Withdrew ${amount}. New balance: ${self.balance:.2f}")
         self.save()
 
     def buy_shares(self, symbol: str, quantity: int, rationale: str) -> str:
@@ -144,7 +167,7 @@ class Account(BaseModel):
 
     def get_profit_loss(self):
         """ Report the user's profit or loss at any point in time. """
-        return self.calculate_profit_loss()
+        return self.calculate_profit_loss(self.calculate_portfolio_value())
 
     def list_transactions(self):
         """ List all transactions made by the user. """
@@ -176,11 +199,13 @@ class Account(BaseModel):
 
 # Example of usage:
 if __name__ == "__main__":
-    account = Account("John Doe")
+    account = Account.get("John Doe")
     account.deposit(1000)
-    account.buy_shares("AAPL", 5)
-    account.sell_shares("AAPL", 2)
+    account.buy_shares("AAPL", random.randint(1, 5), "Investing in Apple for long-term growth")
+    account.sell_shares("AAPL", random.randint(1, min(5, account.get_holdings().get("AAPL", 0))), "Taking some profits from Apple")
     print(f"Current Holdings: {account.get_holdings()}")
-    print(f"Total Portfolio Value: {account.calculate_portfolio_value()}")
-    print(f"Profit/Loss: {account.get_profit_loss()}")
-    print(f"Transactions: {account.list_transactions()}")
+    print(f"Total Portfolio Value: {account.calculate_portfolio_value():.2f}")
+    print(f"Profit/Loss: {account.get_profit_loss():.2f}")
+    print(f"\nTrading Report: \n{'='*100}")
+    print(print_transactions(account.list_transactions()))
+    

@@ -15,8 +15,8 @@ RUN_EVEN_WHEN_MARKET_IS_CLOSED = (
 )
 USE_MANY_MODELS = os.getenv("USE_MANY_MODELS", "false").strip().lower() == "true"
 
-names = ["Warren", "George", "Ray", "Cathie"]
-lastnames = ["Patience", "Bold", "Systematic", "Crypto"]
+names = ["John Doe", "ed", "Ray", "Cathie"]
+lastnames = ["IT", "Author", "Systematic", "Crypto"]
 
 if USE_MANY_MODELS:
     model_names = [

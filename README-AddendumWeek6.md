@@ -317,3 +317,6 @@ python3 3_lab31.py
 ```
 
 http://127.0.0.1:8888/lab/tree/6_mcp/3_lab3.ipyn
+https://polygon.io/
+ - Password: t0nnn$Xxxxx
+ 

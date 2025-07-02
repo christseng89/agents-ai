@@ -319,4 +319,27 @@ python3 3_lab31.py
 http://127.0.0.1:8888/lab/tree/6_mcp/3_lab3.ipyn
 https://polygon.io/
  - Password: t0nnn$Xxxxx
- 
+
+## Week 6 Day 4
+
+
+### 🎓 **CAPSTONE PROJECT!** - Autonomous Traders
+
+💼 Commercial
+
+🛠️ **5** MCP servers with tools and resources
+
+🤝 Agent interactions
+
+🔄 Autonomous
+
+⚠️ **DO NOT** use for trading decisions!
+
+---
+
+```cmd
+npx -y @modelcontextprotocol/server-brave-search
+npx @playwright/mcp@latest
+uvx mcp-server-fetch
+uvx --from git+https://github.com/polygon-io/mcp_polygon@v0.1.0 mcp_polygon
+```

@@ -295,3 +295,25 @@ python3 openai_date_tool.py
   Today's date is July 1, 2025.
 
 ```
+
+## Week 6 Day 3 - MCP Server (internal & external)
+
+```cmd
+npm install mcp-memory-libsql
+```
+
+### Remote MCP servers (SSE)
+https://docs.anthropic.com/en/docs/agents-and-tools/remote-mcp-servers
+
+### Build a SSE Remote MCP Server
+https://developers.cloudflare.com/agents/guides/remote-mcp-server/
+
+```
+cd 6_mcp
+python3 3_lab3.py
+python3 3_lab31.py
+  market_server.py
+  market.py
+```
+
+http://127.0.0.1:8888/lab/tree/6_mcp/3_lab3.ipyn

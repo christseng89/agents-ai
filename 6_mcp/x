@@ -1,0 +1,16 @@
+
+🚀  Starting Memory DB MCP Server...
+Memory DB tools:
+
+🛠️  Tool name: create_entities 
+   Description: Create new entities with observations and optional embeddings
+🛠️  Tool name: search_nodes 
+   Description: Search for entities and their relations using text or vector similarity
+🛠️  Tool name: read_graph 
+   Description: Get recent entities and their relations
+🛠️  Tool name: create_relations 
+   Description: Create relations between entities
+🛠️  Tool name: delete_entity 
+   Description: Delete an entity and all its associated data (observations and relations)
+🛠️  Tool name: delete_relation 
+   Description: Delete a specific relation between entities

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Exactly code copy from 4_lab4.ipynb
+# This script sets up and runs a financial agent system with MCP servers for research and trading.
 
 import os
 import sys
@@ -14,57 +14,48 @@ from datetime import datetime
 from contextlib import AsyncExitStack
 from accounts_client import read_accounts_resource, read_strategy_resource
 from accounts import Account
-from traders import Trader
+from traders import Trader # A python class that manages trading operations
 from reset import reset_traders
 from mcp_params import researcher_mcp_server_params, trader_mcp_server_params
+from templates import get_trader_instructions
 
 from result_utils import print_result, print_tools
 
-# Load .env
+# Load environment variables from a .env file
 load_dotenv(override=True)
 
-# Environment variables
+# Retrieve Polygon API key and plan from environment variables
 polygon_api_key = os.getenv("POLYGON_API_KEY")
 polygon_plan = os.getenv("POLYGON_PLAN")
 
+# Determine if the Polygon plan is 'paid' or 'realtime'
 is_paid_polygon = polygon_plan == "paid"
 is_realtime_polygon = polygon_plan == "realtime"
 
+# Print the current Polygon plan status
 print("is_paid_polygon:", is_paid_polygon)
 print("is_realtime_polygon:", is_realtime_polygon)
 
-# Market MCP params
-if is_paid_polygon or is_realtime_polygon:
-    market_mcp = {
-        "command": "uvx",
-        "args": [
-            "--from",
-            "git+https://github.com/polygon-io/mcp_polygon@master",
-            "mcp_polygon"
-        ],
-        "env": {
-            "POLYGON_API_KEY": polygon_api_key
-        }
-    }
-else:
-    market_mcp = {
-        "command": "uv",
-        "args": ["run", "market_server.py"]
-    }
-
-# Researcher MCP params
+# Define researcher MCP parameters with Brave API key
 brave_env = {
     "BRAVE_API_KEY": os.getenv("BRAVE_API_KEY")
 }
 
+# List of MCP server parameters for researcher and trader
 mcp_server_params = [
     {"command": "uvx", "args": ["mcp-server-fetch"]},
     {"command": "npx", "args": ["-y", "@modelcontextprotocol/server-brave-search"], "env": brave_env}
 ]
 
-accounts_name = "Ed"
+prompt = """
+Use your tools to make decisions about your portfolio.
+Investigate the news and the market, make your decision, make the trades, and respond with a summary of your actions.
+"""
 
-# Create the researcher agent
+accounts_name = "Ed"
+research_question = "What's the latest news on Amazon?"
+
+# Function to create a researcher agent with specific instructions
 async def get_researcher(mcp_servers) -> Agent:
     instructions = f"""You are a financial researcher. You are able to search the web for interesting financial news,
 look for possible trading opportunities, and help with research.
@@ -81,7 +72,7 @@ The current datetime is {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
     )
     return researcher
 
-# Wrap researcher as a tool
+# Function to wrap the researcher agent as a tool
 async def get_researcher_tool(mcp_servers) -> Tool:
     researcher = await get_researcher(mcp_servers)
     return researcher.as_tool(
@@ -93,15 +84,19 @@ async def get_researcher_tool(mcp_servers) -> Tool:
         )
     )
 
+async def print_mcp_servers(type, mcp_servers):
+    # Confirm tools are loaded for each server
+    print(f"\n🔍 {type} MCP Servers with {len(mcp_servers)} servers:\n")
+    for idx, server in enumerate(mcp_servers, 1):
+        tools = await server.list_tools()
+        print(f"\n✅ {type} Server {idx}, with {len(tools)} tools")
+        print_tools(tools)
 
-
-
-async def main():
-    research_question = "What's the latest news on Amazon?"
-
-    # Context stack ensures proper cleanup
+# Main asynchronous function to run the agent system
+async def main():    
+    # AsyncExitStack => Context stack ensures proper 'cleanup' of resources
     async with AsyncExitStack() as stack:
-        # Create researcher MCP servers
+        # Initialize Researcher MCP servers
         researcher_mcp_servers = []
         for params in mcp_server_params:
             server = MCPServerStdio(
@@ -111,14 +106,11 @@ async def main():
             await stack.enter_async_context(server)
             researcher_mcp_servers.append(server)
 
-        # Confirm tools are loaded
-        for idx, server in enumerate(researcher_mcp_servers, 1):
-            tools = await server.list_tools()
-            print(f"✅ MCP Server {idx} Tools:\n{print_tools(tools)}")
+        await print_mcp_servers("Researcher", researcher_mcp_servers)
 
-        # Create trader MCP servers
+        # Initialize Trader MCP servers
         trader_mcp_servers = []
-        for params in trader_mcp_server_params:
+        for params in trader_mcp_server_params: # accounts_server.py, push_server.py, and market_server.py
             server = MCPServerStdio(
                 params,
                 client_session_timeout_seconds=300,
@@ -126,73 +118,61 @@ async def main():
             await stack.enter_async_context(server)
             trader_mcp_servers.append(server)
 
-        # Combine all servers
-        mcp_servers = trader_mcp_servers + researcher_mcp_servers
-        print(f"\n📊 Number of MCP Servers: {len(mcp_servers)}")
+        await print_mcp_servers("Trader", trader_mcp_servers)
 
-        # Run researcher agent
+        # Combine all MCP servers for reference ONLY
+        # This is not used in the agent, but can be useful for debugging or logging
+        combined_mcp_servers = trader_mcp_servers + researcher_mcp_servers
+        print(f"\n📊 Number of MCP Servers: {len(combined_mcp_servers)}")
+
+        # Run researcher agent to gather information
         researcher = await get_researcher(researcher_mcp_servers)
         with trace("Researcher"):
             result = await Runner.run(researcher, research_question, max_turns=30)
         print_result(result)
 
-        # Reset account
+        # Reset trader account with initial strategy
         ed_initial_strategy = (
             "You are a day trader that aggressively buys and sells shares based on news and market conditions."
         )
         Account.get(accounts_name).reset(ed_initial_strategy)
-
         print_result(await read_accounts_resource(accounts_name))
         print_result(await read_strategy_resource(accounts_name))
 
-        # Set up trader
+        # Set up trader agent with specific instructions
         agent_name = accounts_name
         print(f"\nSetting up trader agent: {agent_name}")
-
-        account_details = await read_accounts_resource(agent_name)
-        strategy = await read_strategy_resource(agent_name)
-
-        instructions = f"""
-You are a trader that manages a portfolio of shares. Your name is {agent_name} and your account is under your name, {agent_name}.
-You have access to tools that allow you to search the internet for company news, check stock prices, and buy and sell shares.
-Your investment strategy for your portfolio is:
-{strategy}
-Your current holdings and balance is:
-{account_details}
-You have the tools to perform a websearch for relevant news and information.
-You have tools to check stock prices.
-You have tools to buy and sell shares.
-You have tools to save memory of companies, research and thinking so far.
-Please make use of these tools to manage your portfolio. Carry out trades as you see fit; do not wait for instructions or ask for confirmation.
-"""
-
-        prompt = """
-Use your tools to make decisions about your portfolio.
-Investigate the news and the market, make your decision, make the trades, and respond with a summary of your actions.
-"""
-
-        print(instructions)
-
+        instructions = await get_trader_instructions(agent_name)
         researcher_tool = await get_researcher_tool(researcher_mcp_servers)
+
+        # Initialize trader agent
+        # Using external Researcher MCP servers for tools
+        # Using owner Trader MCP servers for trading
+        print(f"\n🚀 Initializing Trader Agent: {agent_name}")
 
         trader = Agent(
             name=agent_name,
             instructions=instructions,
-            tools=[researcher_tool],
-            mcp_servers=trader_mcp_servers,
+            tools=[researcher_tool],  # 👈 Use Researcher as a tool
+            mcp_servers=trader_mcp_servers,  # 👈 Use Trader MCP servers only
             model="gpt-4o-mini",
         )
 
+        # Run the trader agent
         with trace(agent_name):
             result = await Runner.run(trader, prompt, max_turns=30)
         print_result(result)
         await read_accounts_resource(agent_name)
 
+        # Initialize and run trader object
+        print(f"\n🔄 Running Trader Object for {agent_name}")
         trader_obj = Trader(agent_name)
         await trader_obj.run()
-        await read_accounts_resource(agent_name)
+        print_result(await read_accounts_resource(agent_name))
 
-        # Check all MCP tools for each param
+        # Check all MCP tools for each server
+        # For debugging purposes, we can list all tools available in each MCP server
+        print("\n🔧 Listing all MCP tools from all servers:")
         all_params = trader_mcp_server_params + researcher_mcp_server_params(agent_name.lower)
 
         count = 0
@@ -203,14 +183,14 @@ Investigate the news and the market, make your decision, make the trades, and re
             ) as server:
                 mcp_tools = await server.list_tools()
                 count += len(mcp_tools)
-        print(f"We have {len(all_params)} MCP servers, and {count} tools")
+        print(f"\n\nWe have {len(all_params)} MCP servers, and {count} tools\n")
 
         for params in all_params:
             print(f"Params: {params}")
 
         print_tools(mcp_tools)
 
-# Run the main function
+# Run the main function if the script is executed directly
 if __name__ == "__main__":
     asyncio.run(main())
     sys.exit(0)

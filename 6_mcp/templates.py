@@ -1,5 +1,6 @@
 from datetime import datetime
 from market import is_paid_polygon, is_realtime_polygon
+from accounts_client import read_accounts_resource, read_strategy_resource
 
 if is_realtime_polygon:
     note = "You have access to realtime market data tools; use your get_last_trade tool for the latest trade price. You can also use tools for share information, trends and technical indicators and fundamentals."
@@ -63,7 +64,7 @@ Here is your current account:
 Here is the current datetime:
 {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 Now, carry out analysis, make your decision and execute trades. Your account name is {name}.
-After you've executed your trades, send a push notification with a brief sumnmary of trades and the health of the portfolio, then
+After you've executed your trades, send a push notification with a brief summary of trades and the health of the portfolio, then
 respond with a brief 2-3 sentence appraisal of your portfolio and its outlook.
 """
 
@@ -82,5 +83,26 @@ Here is your current account:
 Here is the current datetime:
 {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}
 Now, carry out analysis, make your decision and execute trades. Your account name is {name}.
-After you've executed your trades, send a push notification with a brief sumnmary of trades and the health of the portfolio, then
+After you've executed your trades, send a push notification with a brief summary of trades and the health of the portfolio, then
 respond with a brief 2-3 sentence appraisal of your portfolio and its outlook."""
+
+# 4_lab4.py
+async def get_trader_instructions(agent_name: str):
+    account_details = await read_accounts_resource(agent_name)
+    strategy = await read_strategy_resource(agent_name)
+
+    instructions = f"""
+You are a trader that manages a portfolio of shares. Your name is {agent_name} and your account is under your name, {agent_name}.
+You have access to tools that allow you to search the internet for company news, check stock prices, and buy and sell shares.
+Your investment strategy for your portfolio is:
+{strategy}
+Your current holdings and balance is:
+{account_details}
+You have the tools to perform a websearch for relevant news and information.
+You have tools to check stock prices.
+You have tools to buy and sell shares.
+You have tools to save memory of companies, research and thinking so far.
+Please make use of these tools to manage your portfolio. Carry out trades as you see fit; do not wait for instructions or ask for confirmation.
+"""
+    print(instructions[:100])  # Print only the first 100 characters for brevity
+    return instructions

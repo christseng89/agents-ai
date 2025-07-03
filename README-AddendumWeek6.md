@@ -347,3 +347,32 @@ export POLYGON_API_KEY=RbyC...
 npx -y @modelcontextprotocol/server-brave-search
 uvx --from git+https://github.com/polygon-io/mcp_polygon@v0.1.0 mcp_polygon
 ```
+
+### Special Note
+- Using external Researcher MCP servers for tools
+- Using owner Trader MCP servers for trading
+
+```python
+trader = Agent(
+    name=agent_name,
+    instructions=instructions,
+    tools=[researcher_tool],  # 👈 Use Researcher as a tool
+    mcp_servers=trader_mcp_servers,  # 👈 Use Trader MCP servers only
+    model="gpt-4o-mini",
+)
+```
+
+```cmd
+cd 6_mcp
+python3 4_lab4.py
+```
+
+### Other files in this folder
+- accounts.py => Handles accounts and database interactions
+- app.py => Main application to run the MCP server
+- database.py => Database interactions using Sqlite
+- market.py => Market data retrieval and processing
+- market_server.py => MCP server for market data
+- mcp_params.py => Parameters for MCP servers
+- templates.py => Best practices to use templates for prompts and instructions
+- trader.py => Trader class to handle trading logic

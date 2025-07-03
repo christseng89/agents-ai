@@ -35,7 +35,7 @@ async def main():
         "env": {"LIBSQL_URL": "file:./memory/ed.db"}
         }
     
-    async with MCPServerStdio(params=params, client_session_timeout_seconds=30) as server:
+    async with MCPServerStdio(params=params, client_session_timeout_seconds=120) as server:
         tools1 = await server.list_tools()
         print("Memory DB tools:\n")
         print_tools(tools1)
@@ -65,7 +65,7 @@ async def main():
         "args": ["-y", "@modelcontextprotocol/server-brave-search"], 
         "env": {"BRAVE_API_KEY": os.getenv("BRAVE_API_KEY")}
         }
-    async with MCPServerStdio(params=params2, client_session_timeout_seconds=30) as server2:
+    async with MCPServerStdio(params=params2, client_session_timeout_seconds=120) as server2:
         tools2 = await server2.list_tools()
         print("Brave Search tools\n")
         print_tools(tools2)
@@ -90,7 +90,7 @@ async def main():
         "args": ["run", "market_server.py"], 
         "env": None
         }
-    async with MCPServerStdio(params=params3, client_session_timeout_seconds=30) as server3:
+    async with MCPServerStdio(params=params3, client_session_timeout_seconds=120) as server3:
         tools3 = await server3.list_tools()
         print("Market tools:")
         print_tools(tools3)

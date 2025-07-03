@@ -87,3 +87,8 @@ if __name__ == "__main__":
 
     # Test with non-JSON text
     print_result_string("Some plain text result from an agent.")
+
+def print_tools(tools):
+    """Helper function to print tool names and descriptions."""
+    for tool in tools:
+        print(f"🛠️  Tool name: {tool.name} \n   Description: {tool.description}")

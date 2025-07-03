@@ -1,80 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# Exactly code copy from 4_lab4.ipynb
 
 import os
+import sys
 import asyncio
-import json
+
 from dotenv import load_dotenv
 from agents import Agent, Runner, trace, Tool
 from agents.mcp import MCPServerStdio
-from rich.console import Console
-from rich.markdown import Markdown
+
 from datetime import datetime
+from contextlib import AsyncExitStack
 from accounts_client import read_accounts_resource, read_strategy_resource
 from accounts import Account
 from traders import Trader
 from reset import reset_traders
 from mcp_params import researcher_mcp_server_params, trader_mcp_server_params
 
+from result_utils import print_result, print_tools
+
 # Load .env
 load_dotenv(override=True)
-
-# Rich console for pretty output
-console = Console()
-
-# Helper functions to display results
-def print_result(result):
-    if result is None:
-        console.print(Markdown("⚠️ No result available."))
-        return
-
-    if hasattr(result, "final_output"):
-        output = result.final_output or "⚠️ Agent returned no output."
-        console.print(Markdown(output))
-    else:
-        print_result_string(result)
-
-def print_result_string(result_string: str):
-    try:
-        data = json.loads(result_string)
-
-        if isinstance(data, dict) and "name" in data and "balance" in data and "strategy" in data:
-            print("✅ === ACCOUNT SUMMARY ===")
-            print(f"Name: {data['name']}")
-            print(f"Balance: ${data['balance']:,.2f}")
-            print("Strategy:")
-            print(f"  {data['strategy']}")
-            print()
-
-            if data.get("holdings"):
-                print("📊 === HOLDINGS ===")
-                for symbol, qty in data["holdings"].items():
-                    print(f"  {symbol}: {qty} shares")
-                print()
-
-            if data.get("transactions"):
-                print("📝 === TRANSACTIONS ===")
-                for tx in data["transactions"]:
-                    action = "BUY" if tx["quantity"] > 0 else "SELL"
-                    qty = abs(tx["quantity"])
-                    price = tx["price"]
-                    print(f"- [{tx['timestamp']}] {action} {qty} {tx['symbol']} @ ${price:,.2f}")
-                    print(f"    Rationale: {tx['rationale']}")
-                print()
-
-            if data.get("total_portfolio_value") is not None:
-                print("💰 === PORTFOLIO VALUE ===")
-                print(f"Total Portfolio Value: ${data['total_portfolio_value']:,.2f}")
-                print(f"Total Profit/Loss: ${data['total_profit_loss']:,.2f}")
-                print()
-
-        else:
-            print("🔹 JSON Object:\n", json.dumps(data, indent=2))
-
-    except json.JSONDecodeError:
-        print("📄 === TEXT RESULT ===")
-        print(result_string)
-        print()
 
 # Environment variables
 polygon_api_key = os.getenv("POLYGON_API_KEY")
@@ -110,6 +57,13 @@ brave_env = {
     "BRAVE_API_KEY": os.getenv("BRAVE_API_KEY")
 }
 
+mcp_server_params = [
+    {"command": "uvx", "args": ["mcp-server-fetch"]},
+    {"command": "npx", "args": ["-y", "@modelcontextprotocol/server-brave-search"], "env": brave_env}
+]
+
+accounts_name = "Ed"
+
 # Create the researcher agent
 async def get_researcher(mcp_servers) -> Agent:
     instructions = f"""You are a financial researcher. You are able to search the web for interesting financial news,
@@ -133,46 +87,72 @@ async def get_researcher_tool(mcp_servers) -> Tool:
     return researcher.as_tool(
         tool_name="Researcher",
         tool_description=(
-            "This tool researches online for news and opportunities, "
-            "either based on your specific request to look into a certain stock, "
-            "or generally for notable financial news and opportunities. "
+            "This tool researches online for news and opportunities, either based on your specific request "
+            "to look into a certain stock, or generally for notable financial news and opportunities. "
             "Describe what kind of research you're looking for."
         )
     )
 
-# Main async function
+
+
+
 async def main():
     research_question = "What's the latest news on Amazon?"
-    researcher_params_list = researcher_mcp_server_params("ed")
 
-    async with \
-        MCPServerStdio(researcher_params_list[0], client_session_timeout_seconds=120) as server1, \
-        MCPServerStdio(researcher_params_list[1], client_session_timeout_seconds=120) as server2, \
-        MCPServerStdio(researcher_params_list[2], client_session_timeout_seconds=120) as server3:
+    # Context stack ensures proper cleanup
+    async with AsyncExitStack() as stack:
+        # Create researcher MCP servers
+        researcher_mcp_servers = []
+        for params in mcp_server_params:
+            server = MCPServerStdio(
+                params,
+                client_session_timeout_seconds=300,
+            )
+            await stack.enter_async_context(server)
+            researcher_mcp_servers.append(server)
 
-        researcher_mcp_servers = [server1, server2, server3]
+        # Confirm tools are loaded
+        for idx, server in enumerate(researcher_mcp_servers, 1):
+            tools = await server.list_tools()
+            print(f"✅ MCP Server {idx} Tools:\n{print_tools(tools)}")
 
+        # Create trader MCP servers
+        trader_mcp_servers = []
+        for params in trader_mcp_server_params:
+            server = MCPServerStdio(
+                params,
+                client_session_timeout_seconds=300,
+            )
+            await stack.enter_async_context(server)
+            trader_mcp_servers.append(server)
+
+        # Combine all servers
+        mcp_servers = trader_mcp_servers + researcher_mcp_servers
+        print(f"\n📊 Number of MCP Servers: {len(mcp_servers)}")
+
+        # Run researcher agent
         researcher = await get_researcher(researcher_mcp_servers)
         with trace("Researcher"):
-            result = await Runner.run(researcher, research_question, max_turns=120)
-        if result is None or getattr(result, "final_output", None) is None:
-            dummy = type("DummyResult", (), {})()
-            dummy.final_output = "⚠️ Agent returned no output."
-            result = dummy
+            result = await Runner.run(researcher, research_question, max_turns=30)
         print_result(result)
 
-    # Reset Ed's account
-    ed_initial_strategy = "You are a day trader that aggressively buys and sells shares based on news and market conditions."
-    Account.get("Ed").reset(ed_initial_strategy)
+        # Reset account
+        ed_initial_strategy = (
+            "You are a day trader that aggressively buys and sells shares based on news and market conditions."
+        )
+        Account.get(accounts_name).reset(ed_initial_strategy)
 
-    print_result(await read_accounts_resource("Ed"))
-    print_result(await read_strategy_resource("Ed"))
+        print_result(await read_accounts_resource(accounts_name))
+        print_result(await read_strategy_resource(accounts_name))
 
-    agent_name = "Ed"
-    account_details = await read_accounts_resource(agent_name)
-    strategy = await read_strategy_resource(agent_name)
+        # Set up trader
+        agent_name = accounts_name
+        print(f"\nSetting up trader agent: {agent_name}")
 
-    instructions = f"""
+        account_details = await read_accounts_resource(agent_name)
+        strategy = await read_strategy_resource(agent_name)
+
+        instructions = f"""
 You are a trader that manages a portfolio of shares. Your name is {agent_name} and your account is under your name, {agent_name}.
 You have access to tools that allow you to search the internet for company news, check stock prices, and buy and sell shares.
 Your investment strategy for your portfolio is:
@@ -186,19 +166,12 @@ You have tools to save memory of companies, research and thinking so far.
 Please make use of these tools to manage your portfolio. Carry out trades as you see fit; do not wait for instructions or ask for confirmation.
 """
 
-    prompt = """
+        prompt = """
 Use your tools to make decisions about your portfolio.
 Investigate the news and the market, make your decision, make the trades, and respond with a summary of your actions.
 """
 
-    print(instructions)
-
-    async with \
-        MCPServerStdio(trader_mcp_server_params[0], client_session_timeout_seconds=120) as server1, \
-        MCPServerStdio(trader_mcp_server_params[1], client_session_timeout_seconds=120) as server2, \
-        MCPServerStdio(trader_mcp_server_params[2], client_session_timeout_seconds=120) as server3:
-
-        trader_mcp_servers = [server1, server2, server3]
+        print(instructions)
 
         researcher_tool = await get_researcher_tool(researcher_mcp_servers)
 
@@ -211,35 +184,33 @@ Investigate the news and the market, make your decision, make the trades, and re
         )
 
         with trace(agent_name):
-            result = await Runner.run(trader, prompt, max_turns=120)
-        if result is None or getattr(result, "final_output", None) is None:
-            dummy = type("DummyResult", (), {})()
-            dummy.final_output = "⚠️ Agent returned no output."
-            result = dummy
+            result = await Runner.run(trader, prompt, max_turns=30)
         print_result(result)
+        await read_accounts_resource(agent_name)
 
-    await read_accounts_resource(agent_name)
+        trader_obj = Trader(agent_name)
+        await trader_obj.run()
+        await read_accounts_resource(agent_name)
 
-    # Optionally reset traders
-    # reset_traders()
+        # Check all MCP tools for each param
+        all_params = trader_mcp_server_params + researcher_mcp_server_params(agent_name.lower)
 
-    trader_runner = Trader("Ed")
-    await trader_runner.run()
+        count = 0
+        for each_params in all_params:
+            async with MCPServerStdio(
+                params=each_params,
+                client_session_timeout_seconds=60,
+            ) as server:
+                mcp_tools = await server.list_tools()
+                count += len(mcp_tools)
+        print(f"We have {len(all_params)} MCP servers, and {count} tools")
 
-    print_result(await read_accounts_resource("Ed"))
+        for params in all_params:
+            print(f"Params: {params}")
 
-    # List all tools from all MCP servers
-    all_params = trader_mcp_server_params + researcher_params_list
-    count = 0
-    for each_params in all_params:
-        async with MCPServerStdio(params=each_params, client_session_timeout_seconds=120) as server:
-            mcp_tools = await server.list_tools()
-            count += len(mcp_tools)
-
-    print(f"We have {len(all_params)} MCP servers, and {count} tools.")
-    for params in all_params:
-        print(f"MCP server params: {params}")
+        print_tools(mcp_tools)
 
 # Run the main function
 if __name__ == "__main__":
     asyncio.run(main())
+    sys.exit(0)

@@ -338,8 +338,12 @@ https://polygon.io/
 ---
 
 ```cmd
-npx -y @modelcontextprotocol/server-brave-search
-npx @playwright/mcp@latest
 uvx mcp-server-fetch
+npx @playwright/mcp@latest
+
+export BRAVE_API_KEY=BSAl...
+export POLYGON_API_KEY=RbyC...
+
+npx -y @modelcontextprotocol/server-brave-search
 uvx --from git+https://github.com/polygon-io/mcp_polygon@v0.1.0 mcp_polygon
 ```

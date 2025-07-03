@@ -186,7 +186,7 @@ async def main():
         print(f"\n\nWe have {len(all_params)} MCP servers, and {count} tools\n")
 
         for params in all_params:
-            print(f"Params: {params}")
+            print(f"Params: {params['command']} {params['args']}")
 
         print_tools(mcp_tools)
 

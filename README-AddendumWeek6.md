@@ -316,7 +316,7 @@ python3 3_lab31.py
   market.py
 ```
 
-http://127.0.0.1:8888/lab/tree/6_mcp/3_lab3.ipyn
+http://127.0.0.1:8888/lab/tree/6_mcp/3_lab3.ipynb
 https://polygon.io/
  - Password: t0nnn$Xxxxx
 
@@ -376,3 +376,16 @@ python3 4_lab4.py
 - mcp_params.py => Parameters for MCP servers
 - templates.py => Best practices to use templates for prompts and instructions
 - trader.py => Trader class to handle trading logic
+
+http://127.0.0.1:8888/lab/tree/6_mcp/4_lab4.ipynb
+
+## Week 6 Day 5 - MCP Server (internal & external)
+
+### **Adding a few details**
+
+🐮 The Trading Floor
+👐 **Autonomy** to evolve strategy
+👥 More Models
+🖥️ A User Interface (gr)
+
+---

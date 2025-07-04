@@ -185,7 +185,7 @@ http://127.0.0.1:8888/lab/tree/6_mcp/1_lab1.ipynb
 
 ```cmd
 cd 6_mcp
-python3 1_lab1.py
+uv run 1_lab1.py
 ```
 
 ### MCP Marketplace
@@ -277,9 +277,9 @@ http://127.0.0.1:8888/lab/tree/6_mcp/2_lab2.ipynb
 
 ```cmd
 cd 6_mcp
-python3 accounts.py
-python3 2_lab2.py
-python3 app.py
+uv run accounts.py
+uv run 2_lab2.py
+uv run app.py
 ```
 
 #### Special Note
@@ -288,12 +288,14 @@ python3 app.py
 #### Exercise
 
 ```
-cd 6_mcp\exercise_date
-python3 openai_date_tool.py
+cd 6_mcp
+cd 6_mcp/exercise_date
+uv run openai_date_tool.py
   LLM calls function: 'get_today_date'
   [07/01/25 18:31:52] INFO     Processing request of type CallToolRequest                                    server.py:556
   Today's date is July 1, 2025.
 
+cd ..
 ```
 
 ## Week 6 Day 3 - MCP Server (internal & external)
@@ -310,8 +312,8 @@ https://developers.cloudflare.com/agents/guides/remote-mcp-server/
 
 ```
 cd 6_mcp
-python3 3_lab3.py
-python3 3_lab31.py
+uv run 3_lab3.py
+uv run 3_lab31.py
   market_server.py
   market.py
 ```
@@ -364,7 +366,7 @@ trader = Agent(
 
 ```cmd
 cd 6_mcp
-python3 4_lab4.py
+uv run 4_lab4.py
 ```
 
 ### Other files in this folder
@@ -387,5 +389,133 @@ http://127.0.0.1:8888/lab/tree/6_mcp/4_lab4.ipynb
 👐 **Autonomy** to evolve strategy
 👥 More Models
 🖥️ A User Interface (gr)
+
+---
+
+### Tracer for OpenAI Agent SDK
+- tracers.py 
+
+### Update .env file
+```note
+GROK_API_KEY=xai-TRkI9oJ... # from console.x.ai
+RUN_EVERY_N_MINUTES=60
+RUN_EVEN_WHEN_MARKET_IS_CLOSED=True
+USE_MANY_MODELS=True
+```
+
+- trading_floor.py
+  - **asyncio.gather** to run multiple tasks concurrently
+```cmd
+cd 6_mcp
+uv run app.py
+uv run trading_floor.py
+```
+
+### 🎲 **Which Framework to select?**
+
+✨ *It's not the most important question and it doesn't really matter!*
+
+🤝 *Pick the framework that suits your style and the skills of your team*
+
+🔥 *My go-to is **OpenAI Agents SDK + MCP**, but some prefer batteries included*
+
+*We didn't cover some favorite frameworks like **Google ADK**, **HuggingFace SmolAgents** and **Pydantic AI** - but they will seem so familiar!*
+
+---
+
+### **What matters**
+
+1. Start with the **problem**, not the solution
+2. Have a **metric** to evaluate success
+3. Favor **workflow** over autonomy initially
+4. Work **bottom up**, not top down
+5. Start **simple**, then add
+6. Start with **large frontier models**, then reduce
+7. Think **context** rather than memory
+8. Most problems are solved with **prompts**
+9. Look at the **traces**
+10. Be a **scientist**; no shortcut to R&D
+
+---
+**Agentic AI 项目实战指南**
+
+主要重点：
+
+✅ 不要一上来就说「我要用 agent 做 X」——先搞清楚问题是什么。
+✅ 为你的问题定义可衡量的 metric，并确保你有数据去测量它。
+✅ 一开始先做简单的工作流，不要急着做全自主。
+✅ 从 bottom-up 做起，小步快跑。
+✅ 用高端模型先跑通，再考虑用轻量模型优化成本。
+✅ 所有记忆机制的本质都是把对的 context 塞进 prompt。
+✅ 遇到问题，先从优化 prompt 着手。
+✅ 一定要看 trace，找隐藏的问题。
+✅ AI 工程师要有科学家的心态，不断做实验、验证，不要只凭直觉。(no shortcuts to R&D)
+
+这是一套非常实用的 **Agentic AI 项目实战指南**，特别适合正在投入 LLM / Agents 开发的团队。
+
+---
+
+## Recap from Week 1 to Week 6
+非常好！以下是你圖片中的課程內容，**倒序排列**（從 Week 1 → Week 6）：
+
+---
+
+### **Week 1: Foundations**
+
+* Understand Agentic Workflow
+* Agents and Patterns
+* Orchestrating LLMs
+* Autonomy and Tools
+* Project 1: Your personal career agent
+
+---
+
+### **Week 2: OpenAI Agents SDK**
+
+* Understand OpenAI Agents SDK concepts
+* Project 2: an SDR
+* Tools vs Agents Guardrails
+* Project 3: Deep Research
+* Project 3: Deep Research app
+
+---
+
+### **Week 3: CrewAI**
+
+* Understand CrewAI Concepts
+* Build a Crew Agent
+* Project 4: Stock Picker
+* Project 5: Developer Agent
+* Project 5: Engineering Team
+
+---
+
+### **Week 4: LangGraph**
+
+* Understand LangGraph concepts
+* Build a LangGraph Agent
+* Tools, memory, web searches
+* Project 6: Sidekick
+* Project 5: Sidekick improvements
+
+---
+
+### **Week 5: AutoGen**
+
+* Understand AutoGen concepts
+* AutoGen Agent Chat
+* AutoGen Core
+* AutoGen Core - distributed
+* Project 7: Agent Creator
+
+---
+
+### **Week 6: MCP**
+
+* Agentic Architecture and MCP
+* Building an MCP Server and Client
+* Multiple Local and Remote MCP servers
+* Project 8: AI Equity Traders
+* Project 8: AI Equity Traders In Action
 
 ---

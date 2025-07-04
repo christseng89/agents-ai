@@ -117,6 +117,9 @@ async def main():
     # Account Client Tools 
     # -------------------------------
     client_server_tools = await list_accounts_tools() # Exposed accounts server tools to accounts client
+    for tool in client_server_tools:
+        print(f"\nName: '{tool.name}' \nDescription: '{tool.description}'")    
+        
     client_openai_tools = await get_accounts_tools_openai() # Convert tools to OpenAI Tool -> FunctionTool
     print("\n🤖 List of OpenAI Tools - Accounts Client:\n" + "="*40)
     for tool in client_openai_tools:

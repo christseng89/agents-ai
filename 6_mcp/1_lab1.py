@@ -10,7 +10,7 @@ load_dotenv(override=True)
 async def main():
     print("Starting MCP Server for Fetch...")
     fetch_params = {"command": "uvx", "args": ["mcp-server-fetch"]}
-    async with MCPServerStdio(params=fetch_params, client_session_timeout_seconds=30) as server:
+    async with MCPServerStdio(params=fetch_params, client_session_timeout_seconds=100) as server:
         fetch_tools = await server.list_tools()
 
     # fetch_tools
@@ -20,7 +20,7 @@ async def main():
 
     print("\nStarting MCP Server for Playwright...")
     playwright_params = {"command": "npx","args": [ "@playwright/mcp@latest"]}
-    async with MCPServerStdio(params=playwright_params, client_session_timeout_seconds=30) as server:
+    async with MCPServerStdio(params=playwright_params, client_session_timeout_seconds=100) as server:
         playwright_tools = await server.list_tools()
 
     # playwright_tools
@@ -31,7 +31,7 @@ async def main():
     print("\nStarting MCP Server for Filesystem...")
     sandbox_path = os.path.abspath(os.path.join(os.getcwd(), "sandbox"))
     files_params = {"command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", sandbox_path]}
-    async with MCPServerStdio(params=files_params,client_session_timeout_seconds=30) as server:
+    async with MCPServerStdio(params=files_params,client_session_timeout_seconds=100) as server:
         file_tools = await server.list_tools()
 
     # file_tools
@@ -49,8 +49,8 @@ async def main():
     food_menu = "Guinness Beef Stew"
     message = f"Find a great recipe for {food_menu}, then summarize it in markdown to {food_menu.lower().replace(" ", "_")}-recipe.md in the sandbox directory."
 
-    async with MCPServerStdio(params=files_params, client_session_timeout_seconds=30) as mcp_server_files:
-        async with MCPServerStdio(params=playwright_params, client_session_timeout_seconds=30) as mcp_server_browser:
+    async with MCPServerStdio(params=files_params, client_session_timeout_seconds=100) as mcp_server_files:
+        async with MCPServerStdio(params=playwright_params, client_session_timeout_seconds=100) as mcp_server_browser:
             print ("\nStarting Investigator Agent...")
             agent = Agent(
                 name="investigator", 

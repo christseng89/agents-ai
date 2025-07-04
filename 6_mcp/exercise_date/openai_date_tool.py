@@ -4,6 +4,9 @@ import asyncio
 from openai import OpenAI
 import json
 from date_client import call_get_today_date
+from dotenv import load_dotenv
+
+load_dotenv(override=True)
 
 client = OpenAI()
 

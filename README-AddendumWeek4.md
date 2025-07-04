@@ -558,9 +558,12 @@ Here is the **diagram transcription** with a text-based representation and expla
 ### Install Playwright
 
 ```cmd
+sudo apt install libnss3  libnspr4
+
 uv pip install playwright
 uv run playwright --version
   Version 1.52.0
+uv run playwright install-deps  
 uv run playwright install
 ```
 

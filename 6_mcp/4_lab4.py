@@ -192,5 +192,8 @@ async def main():
 
 # Run the main function if the script is executed directly
 if __name__ == "__main__":
-    asyncio.run(main())
-    sys.exit(0)
+    print(f"Starting the financial agent system with MCP servers at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\n🛑 Shutdown requested — exiting…")  

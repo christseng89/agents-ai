@@ -52,4 +52,7 @@ async def run_every_n_minutes():
 
 if __name__ == "__main__":
     print(f"Starting scheduler to run every {RUN_EVERY_N_MINUTES} minutes")
-    asyncio.run(run_every_n_minutes())
+    try:
+        asyncio.run(run_every_n_minutes())
+    except KeyboardInterrupt:
+        print("\n🛑 Shutdown requested — exiting…")    

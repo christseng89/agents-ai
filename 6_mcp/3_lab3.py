@@ -162,5 +162,7 @@ async def main():
         print("According to your .env file, you've chosen to subscribe to the free Polygon plan, so the code will look at EOD prices")
 
 if __name__ == "__main__":
-    asyncio.run(main())
-    
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\n🛑 Shutdown requested — exiting…")  

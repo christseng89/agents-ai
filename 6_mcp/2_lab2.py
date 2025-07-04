@@ -151,4 +151,8 @@ async def main():
     Account.get("Ed").report()
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("\n🛑 Shutdown requested — exiting…")  
+

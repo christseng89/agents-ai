@@ -191,3 +191,4 @@ memory/
 sandbox/
 5_autogen/**/agent_*.py
 5_autogen/**/idea_*.md
+testMcpServers/qa*.md

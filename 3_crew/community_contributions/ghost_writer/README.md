@@ -68,7 +68,7 @@
 The GhostWriter Crew operates in a structured pipeline. Each agent has a distinct role:
 
 1. **Idea Developer**: Takes a seed of an idea and develops it into a compelling concept with depth and richness
-2. **Plot Developer**: Explors the rising action, climax, falling action, and resolution of the story.
+2. **Plot Developer**: Explores the rising action, climax, falling action, and resolution of the story.
 3. **Character Developer**: Creates multi-dimensional characters with emotional arcs that resonate with readers.
 4. **Outline Developer**: Creates detailed outline of the novel, including chapter breakdowns and key events.
 5. **Author**: Writes the novel based on the developed outline, characters, and plot
